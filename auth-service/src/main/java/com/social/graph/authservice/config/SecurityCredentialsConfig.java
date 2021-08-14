@@ -36,9 +36,6 @@ public class SecurityCredentialsConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserService userService;
 
-    @Value("${security.service.password}")
-    private String servicePassword;
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http

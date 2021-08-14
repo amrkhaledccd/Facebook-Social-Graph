@@ -63,6 +63,7 @@ public class UserEndpoint {
         User user = User
                 .builder()
                 .username(payload.getUsername())
+                .displayName(payload.getName())
                 .email(payload.getEmail())
                 .password(payload.getPassword())
                 .build();
@@ -84,7 +85,7 @@ public class UserEndpoint {
 
         return  userService
                 .findByUsername(username)
-                .map(user -> ResponseEntity.ok(user))
+                .map(ResponseEntity::ok)
                 .orElseThrow(() -> new ResourceNotFoundException(username));
     }
 

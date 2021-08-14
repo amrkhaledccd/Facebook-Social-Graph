@@ -31,6 +31,7 @@ public class User {
         this.id = user.id;
         this.username = user.username;
         this.password = user.password;
+        this.displayName = user.displayName;
         this.email = user.email;
         this.createdAt = user.getCreatedAt();
         this.updatedAt = user.getUpdatedAt();
