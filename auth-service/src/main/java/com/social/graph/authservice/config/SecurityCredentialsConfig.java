@@ -4,7 +4,6 @@ package com.social.graph.authservice.config;
 import com.social.graph.authservice.service.JwtTokenProvider;
 import com.social.graph.authservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
