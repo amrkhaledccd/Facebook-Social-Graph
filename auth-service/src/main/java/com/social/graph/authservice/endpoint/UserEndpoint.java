@@ -18,13 +18,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
-import java.net.URI;
 
 @RestController
 @Slf4j
@@ -43,7 +41,7 @@ public class UserEndpoint {
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
-        Authentication authentication = authenticationManager.authenticate(
+        var authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getUsername(),
                         loginRequest.getPassword()
@@ -60,7 +58,7 @@ public class UserEndpoint {
     public ResponseEntity<?> createUser(@Valid @RequestBody SignUpRequest payload) {
         log.info("creating user {}", payload.getUsername());
 
-        User user = User
+        var user = User
                 .builder()
                 .username(payload.getUsername())
                 .displayName(payload.getName())
@@ -70,7 +68,7 @@ public class UserEndpoint {
 
         userService.registerUser(user);
 
-        URI location = ServletUriComponentsBuilder
+        var location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/users/{username}")
                 .buildAndExpand(user.getUsername()).toUri();
 

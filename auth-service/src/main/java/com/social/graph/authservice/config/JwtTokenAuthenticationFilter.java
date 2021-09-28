@@ -34,7 +34,7 @@ public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         // 1. get the authentication header. Tokens are supposed to be passed in the authentication header
-        String header = request.getHeader(jwtConfig.getHeader());
+        var header = request.getHeader(jwtConfig.getHeader());
         // 2. validate the header and check the prefix
         if(header == null || !header.startsWith(jwtConfig.getPrefix())) {
             chain.doFilter(request, response);  		// If not valid, go to the next filter.
@@ -47,13 +47,13 @@ public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
         // And If user tried to access without access token, then he won't be authenticated and an exception will be thrown.
 
         // 3. Get the token
-        String token = header.replace(jwtConfig.getPrefix(), "");
+        var token = header.replace(jwtConfig.getPrefix(), "");
 
         if(tokenProvider.validateToken(token)) {
             Claims claims = tokenProvider.getClaimsFromJWT(token);
             String username = claims.getSubject();
 
-            UsernamePasswordAuthenticationToken auth = userService
+            var auth = userService
                     .findByUsername(username)
                     .map(AuthUserDetails::new)
                     .map(userDetails -> {
