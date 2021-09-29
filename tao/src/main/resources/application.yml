@@ -1,0 +1,23 @@
+server:
+  port: 3004
+
+spring:
+  application:
+    name: tao-service
+
+  data:
+    neo4j:
+      uri: bolt://localhost:7687
+      username: neo4j
+      password: admin
+
+security:
+  basic:
+    enable: false
+
+  jwt:
+    uri: /auth/**
+    header: Authorization
+    prefix: Bearer
+    expiration: 86400
+    secret: JwtSecretKey
