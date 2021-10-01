@@ -4,13 +4,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.neo4j.core.schema.GeneratedValue;
-import org.springframework.data.neo4j.core.schema.Id;
-import org.springframework.data.neo4j.core.schema.Node;
-import org.springframework.data.neo4j.core.schema.Relationship;
+import org.springframework.data.neo4j.core.schema.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,10 +20,16 @@ public class ObjectNode {
     private UUID id;
 
     @NonNull
-    private String type;
+    private ObjectType type;
 
-    private String data;
+    @DynamicLabels
+    private List<String> labels = new ArrayList<>();
 
     @Relationship(type = "relate_to")
-    List<Edge> edges = new ArrayList<>();
+    List<Association> edges = new ArrayList<>();
+
+    public ObjectNode(ObjectType type, List<String> labels) {
+        this.type = type;
+        this.labels = labels;
+    }
 }

@@ -1,10 +1,12 @@
 package com.social.graph.tao;
 
-import com.social.graph.tao.service.ObjectNodeService;
+import com.social.graph.tao.model.ObjectType;
+import com.social.graph.tao.service.impl.DefaultObjectNodeService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import java.util.Arrays;
 
 @SpringBootApplication
 public class TaoApplication {
@@ -15,9 +17,13 @@ public class TaoApplication {
 
 
 	@Bean
-	public CommandLineRunner init(ObjectNodeService service) {
+	public CommandLineRunner init(DefaultObjectNodeService service) {
 		return  args -> {
-			service.save("0894b3bd-7c4c-4bcd-a58b-dd5ef98a61ca", "8e518f4f-e980-49cd-9212-f33216e0a85d");
+          service.createObject(ObjectType.USER,
+				  Arrays.asList("username:amkhaledccd", "email:amrkhaledccd@hotmail.com"));
+
+			service.createObject(ObjectType.USER,
+					Arrays.asList("username:samir", "email:samir@hotmail.com"));
 		};
 	}
 }
