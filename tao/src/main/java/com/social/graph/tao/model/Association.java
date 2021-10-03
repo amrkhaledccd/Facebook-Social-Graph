@@ -1,14 +1,18 @@
 package com.social.graph.tao.model;
 
 
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.neo4j.core.schema.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
+
 @RelationshipProperties
-@NoArgsConstructor
 @RequiredArgsConstructor
+@Getter
 public class Association {
     @Id
     @GeneratedValue
@@ -16,6 +20,9 @@ public class Association {
 
     @NonNull
     private AssociationType type;
+
+    @DynamicLabels
+    private List<String> labels = new ArrayList<>();
 
     @TargetNode
     @NonNull

@@ -1,18 +1,11 @@
 package com.social.graph.tao.model;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import org.springframework.data.neo4j.core.schema.*;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Node
 @Data
-@NoArgsConstructor
 @RequiredArgsConstructor
 public class ObjectNode {
     @Id
@@ -22,14 +15,10 @@ public class ObjectNode {
     @NonNull
     private ObjectType type;
 
-    @DynamicLabels
-    private List<String> labels = new ArrayList<>();
-
     @Relationship(type = "relate_to")
-    List<Association> edges = new ArrayList<>();
+    private List<Association> edges = new ArrayList<>();
 
-    public ObjectNode(ObjectType type, List<String> labels) {
-        this.type = type;
-        this.labels = labels;
-    }
+    @CompositeProperty
+    private Map<String, String> data = new HashMap<>();
 }
+
