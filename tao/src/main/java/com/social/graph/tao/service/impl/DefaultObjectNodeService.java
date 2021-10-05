@@ -9,6 +9,8 @@ import com.social.graph.tao.repository.ObjectNodeRepository;
 import com.social.graph.tao.service.ObjectNodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import static java.lang.String.format;
@@ -34,6 +36,12 @@ public class DefaultObjectNodeService implements ObjectNodeService {
     }
 
     @Override
+    public List<ObjectNode> findAdjacentObjects(UUID objectId, ObjectType type) {
+        findObjectById(objectId);
+        return repository.findAdjacentObjects(objectId, type);
+    }
+
+    @Override
     public void updateObject(UUID objectId) {
 
     }
@@ -47,11 +55,11 @@ public class DefaultObjectNodeService implements ObjectNodeService {
         var username = user.getData().get("username");
         var email = user.getData().get("email");
 
-        if(repository.existsByUsername(username)) {
+        if(repository.existsByUsername(username.toString())) {
             throw new UsernameAlreadyExistsException(format("Username [%s] already exists", username));
         }
 
-        if(repository.existsByEmail(email)) {
+        if(repository.existsByEmail(email.toString())) {
             throw new EmailAlreadyExistsException(format("Email [%s] already exists", email));
         }
     }
