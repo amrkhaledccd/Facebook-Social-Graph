@@ -1,5 +1,6 @@
 package com.social.graph.authservice.config;
 
+import com.google.gson.Gson;
 import com.social.graph.authservice.model.AuthUserDetails;
 import com.social.graph.authservice.service.JwtTokenProvider;
 import com.social.graph.authservice.service.UserService;
@@ -13,6 +14,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Set;
 
 public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
 
@@ -55,7 +57,14 @@ public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
 
             var auth = userService
                     .findByUsername(username)
-                    .map(AuthUserDetails::new)
+                    .map(objectNode -> {
+                        var password = objectNode.getData().get("password");
+                        var roles =
+                                new Gson().<Set<String>>fromJson(objectNode.getData().get("roles"), Set.class);
+                        var isActive = Boolean.getBoolean(objectNode.getData().get("isActive"));
+
+                        return new AuthUserDetails(username, password, roles ,isActive);
+                    })
                     .map(userDetails -> {
                         var authentication = new UsernamePasswordAuthenticationToken(
                                 userDetails, null, userDetails.getAuthorities());

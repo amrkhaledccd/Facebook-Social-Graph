@@ -1,28 +1,24 @@
 package com.social.graph.authservice.endpoint;
 
 import com.social.graph.authservice.exception.ResourceNotFoundException;
-import com.social.graph.authservice.model.AuthUserDetails;
-import com.social.graph.authservice.model.User;
 import com.social.graph.authservice.payload.ApiResponse;
 import com.social.graph.authservice.payload.JwtAuthenticationResponse;
 import com.social.graph.authservice.payload.LoginRequest;
 import com.social.graph.authservice.payload.SignUpRequest;
 import com.social.graph.authservice.service.JwtTokenProvider;
 import com.social.graph.authservice.service.UserService;
-import com.social.graph.authservice.util.AppConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
+import java.util.HashMap;
 
 @RestController
 @Slf4j
@@ -58,19 +54,19 @@ public class UserEndpoint {
     public ResponseEntity<?> createUser(@Valid @RequestBody SignUpRequest payload) {
         log.info("creating user {}", payload.getUsername());
 
-        var user = User
-                .builder()
-                .username(payload.getUsername())
-                .displayName(payload.getName())
-                .email(payload.getEmail())
-                .password(payload.getPassword())
-                .build();
+        var data = new HashMap<String, String>();
+        data.put("username", payload.getUsername());
+        data.put("name", payload.getName());
+        data.put("email", payload.getEmail());
+        data.put("password", payload.getPassword());
+        if(payload.getImageUrl() != null && !payload.getImageUrl().isEmpty()) {
+            data.put("imageUrl", payload.getImageUrl());
+        }
 
-        userService.registerUser(user);
-
+        userService.registerUser(data);
         var location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/users/{username}")
-                .buildAndExpand(user.getUsername()).toUri();
+                .buildAndExpand(payload.getUsername()).toUri();
 
         return ResponseEntity
                 .created(location)
@@ -85,20 +81,5 @@ public class UserEndpoint {
                 .findByUsername(username)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new ResourceNotFoundException(username));
-    }
-
-    @GetMapping(value = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> findAll( @RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
-                                      @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size) {
-        log.info("retrieving all users");
-        return ResponseEntity
-                .ok(userService.findAll(page, size));
-    }
-
-    @GetMapping(value = "/users/me", produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasRole('USER')")
-    @ResponseStatus(HttpStatus.OK)
-    public User getCurrentUser(@AuthenticationPrincipal AuthUserDetails userDetails) {
-        return userDetails;
     }
 }
