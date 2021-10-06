@@ -1,7 +1,11 @@
 package com.social.graph.tao.model;
 
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.neo4j.core.schema.*;
+
+import java.time.Instant;
 import java.util.*;
 
 @Node
@@ -20,5 +24,11 @@ public class ObjectNode {
 
     @CompositeProperty
     private Map<String, String> data = new HashMap<>();
+
+    @CreatedDate
+    private Instant createdAt;
+
+    @LastModifiedDate
+    private Instant updatedAt;
 }
 
