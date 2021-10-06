@@ -27,9 +27,9 @@ public class AuthUserDetailsService implements UserDetailsService {
                     var password = objectNode.getData().get("password");
                     var roles =
                             new Gson().<Set<String>>fromJson(objectNode.getData().get("roles"), Set.class);
-                    var isActive = Boolean.getBoolean(objectNode.getData().get("isActive"));
+                    var isActive = Boolean.parseBoolean(objectNode.getData().get("isActive"));
 
-                    return new AuthUserDetails(username, password, roles ,isActive);
+                    return new AuthUserDetails(username, password, roles , isActive);
                 })
                 .orElseThrow(() -> new UsernameNotFoundException("Username not found"));
     }
