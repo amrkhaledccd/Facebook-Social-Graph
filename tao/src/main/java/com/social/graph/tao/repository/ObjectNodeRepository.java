@@ -11,13 +11,7 @@ import java.util.UUID;
 
 public interface ObjectNodeRepository extends Neo4jRepository<ObjectNode, UUID> {
 
-    @Query("MATCH (n:ObjectNode) where n.`data.username` = $username RETURN COUNT(n) > 0")
-    boolean existsByUsername(String username);
-
-    @Query("MATCH (n:ObjectNode) where n.`data.email` = $email RETURN COUNT(n) > 0")
-    boolean existsByEmail(String email);
-
-    @Query("MATCH (n:ObjectNode{id:$objectId}) -[r]-> (p:ObjectNode{type:$type}) return p; ")
+    @Query("MATCH (n:ObjectNode{id:$objectId}) -[r]-> (p:ObjectNode{type:$type}) return p")
     List<ObjectNode> findAdjacentObjects(UUID objectId, ObjectType type);
 
     @Query("MATCH (n:ObjectNode{id:$startObjId}) -[r:relate_to{type:$type}]-> (m:ObjectNode{id:$endObjId}) RETURN COUNT(r) > 0")
