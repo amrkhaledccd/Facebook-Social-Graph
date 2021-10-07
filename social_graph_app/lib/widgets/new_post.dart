@@ -19,6 +19,8 @@ class _NewPostState extends State<NewPost> {
   @override
   Widget build(BuildContext context) {
     final _postService = Provider.of<PostService>(context, listen: false);
+    final authService = Provider.of<AuthService>(context, listen: false);
+
     final _scaffoldMessenger = ScaffoldMessenger.of(context);
 
     return Container(
@@ -76,11 +78,12 @@ class _NewPostState extends State<NewPost> {
                             .createPost(_textContrller.value.text);
 
                         await AssociationService().createAssociation(
-                            AuthService().userId,
+                            authService.currentUser.id,
                             _post.id,
                             AssociationType.created);
 
-                        await _postService.findUserPosts(AuthService().userId);
+                        await _postService
+                            .findUserPosts(authService.currentUser.id);
 
                         setState(() {
                           _textContrller.clear();

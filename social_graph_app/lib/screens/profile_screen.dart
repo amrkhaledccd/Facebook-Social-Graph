@@ -27,12 +27,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _loadPosts() async {
     final postService = Provider.of<PostService>(context, listen: false);
+    final authService = Provider.of<AuthService>(context, listen: false);
     setState(() {
       _loading = true;
     });
 
     try {
-      await postService.findUserPosts(AuthService().userId);
+      await postService.findUserPosts(authService.currentUser.id);
       setState(() {
         _loading = false;
       });

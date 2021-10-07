@@ -17,7 +17,6 @@ class PostService with ChangeNotifier {
 
     try {
       final response = await http.get(Uri.parse(url));
-      print(response.statusCode);
       if (response.statusCode < 300) {
         final fetchedPosts = json.decode(response.body);
         List<Post> posts = [];
