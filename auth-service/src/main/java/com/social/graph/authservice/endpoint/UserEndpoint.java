@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
@@ -45,9 +44,10 @@ public class UserEndpoint {
         );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        String jwt = tokenProvider.generateToken(authentication);
-        return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
+        var jwt = tokenProvider.generateToken(authentication);
+        var user = userService.findByUsername(loginRequest.getUsername()).get();
+        user.getData().remove("password");
+        return ResponseEntity.ok(new JwtAuthenticationResponse(jwt, user));
     }
 
     @PostMapping(value = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -59,9 +59,7 @@ public class UserEndpoint {
         data.put("name", payload.getName());
         data.put("email", payload.getEmail());
         data.put("password", payload.getPassword());
-        if(payload.getImageUrl() != null && !payload.getImageUrl().isEmpty()) {
-            data.put("imageUrl", payload.getImageUrl());
-        }
+        data.put("imageUrl", payload.getImageUrl());
 
         userService.registerUser(data);
         var location = ServletUriComponentsBuilder
