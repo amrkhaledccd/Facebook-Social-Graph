@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_graph_app/screens/auth_screen.dart';
 import 'package:social_graph_app/screens/profile_screen.dart';
+import 'package:social_graph_app/screens/tabs_screen.dart';
 import 'package:social_graph_app/services/auth_service.dart';
 import 'package:social_graph_app/services/post_service.dart';
 
@@ -28,12 +29,11 @@ class MyApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             title: 'Flutter Demo',
             theme: ThemeData(
-              primaryColor: Colors.blue[900],
+              primaryColor: Colors.blue[700],
             ),
             home: authService.isAuthenticated
                 ? ChangeNotifierProvider<PostService>(
-                    create: (ctx) => PostService(),
-                    child: const ProfileScreen())
+                    create: (ctx) => PostService(), child: const TabsScreen())
                 : const AuthScreen(),
           ),
         ),

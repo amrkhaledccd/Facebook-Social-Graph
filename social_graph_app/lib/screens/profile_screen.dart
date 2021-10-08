@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_graph_app/services/auth_service.dart';
+import 'package:social_graph_app/widgets/profile_card.dart';
 
 import '../services/post_service.dart';
 import '../widgets/new_post.dart';
@@ -64,6 +65,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: CustomScrollView(
             slivers: [
               const ProfileAppbar(),
+              SliverToBoxAdapter(
+                child: ProfileCard(),
+              ),
               const SliverToBoxAdapter(
                 child: NewPost(),
               ),
