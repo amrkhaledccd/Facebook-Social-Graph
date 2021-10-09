@@ -53,7 +53,7 @@ class AuthService with ChangeNotifier {
 
       if (response.statusCode == 401) {
         throw HttpException("Invalid username or password");
-      } else if (response.statusCode > 300) {
+      } else if (response.statusCode >= 400) {
         throw HttpException("Unable to authenticate");
       }
 
@@ -66,8 +66,33 @@ class AuthService with ChangeNotifier {
         body['user']['data']['name'],
         body['user']['data']['imageUrl'],
       );
-      print(_currentUser!.email);
       notifyListeners();
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  Future<User> findUser(String username) async {
+    final url = "http://10.0.2.2:3001/users/$username";
+    print(username);
+    try {
+      final response = await http
+          .get(Uri.parse(url), headers: {"Authorization": "Bearer $_token"});
+
+      if (response.statusCode >= 400) {
+        throw HttpException("Unauthorized");
+      } else if (response.statusCode >= 500) {
+        throw HttpException("Something went wrong");
+      }
+
+      final body = json.decode(response.body);
+      return User(
+        body['id'],
+        body['data']['username'],
+        body['data']['email'],
+        body['data']['name'],
+        body['data']['imageUrl'],
+      );
     } catch (error) {
       rethrow;
     }

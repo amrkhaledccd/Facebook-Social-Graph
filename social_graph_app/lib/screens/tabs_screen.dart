@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:social_graph_app/screens/groups_screen.dart';
 import 'package:social_graph_app/screens/home_screen.dart';
 import 'package:social_graph_app/screens/notification_screen.dart';
 import 'package:social_graph_app/screens/profile_screen.dart';
+import 'package:social_graph_app/services/post_service.dart';
 
 class TabsScreen extends StatefulWidget {
   const TabsScreen({Key? key}) : super(key: key);
@@ -14,11 +16,12 @@ class TabsScreen extends StatefulWidget {
 class _TabsScreenState extends State<TabsScreen> {
   int _selectedIndex = 0;
 
-  final screens = [
+  List<Widget> screens = [
     const HomeScreen(),
     const GroupsScreen(),
     const NotificationScreen(),
-    const ProfileScreen()
+    ChangeNotifierProvider<PostService>(
+        create: (ctx) => PostService(), child: const ProfileScreen()),
   ];
 
   @override

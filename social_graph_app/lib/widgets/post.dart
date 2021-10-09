@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:social_graph_app/models/user.dart';
 
 class PostWidget extends StatelessWidget {
   final String postText;
-
-  const PostWidget({Key? key, required this.postText}) : super(key: key);
+  final User user;
+  const PostWidget({Key? key, required this.postText, required this.user})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -14,12 +16,11 @@ class PostWidget extends StatelessWidget {
       child: Column(
         children: [
           ListTile(
-            leading: const CircleAvatar(
+            leading: CircleAvatar(
               radius: 20,
-              backgroundImage: NetworkImage(
-                  "https://schooloflanguages.sa.edu.au/wp-content/uploads/2017/11/placeholder-profile-sq.jpg"),
+              backgroundImage: NetworkImage(user.imageUrl),
             ),
-            title: const Text("Amr Khaled"),
+            title: Text(user.name),
             subtitle: Text(DateFormat.yMMMd().format(DateTime.now())),
             trailing: const Icon(Icons.more_horiz),
           ),

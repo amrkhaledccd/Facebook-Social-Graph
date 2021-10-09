@@ -30,18 +30,17 @@ class _NewPostState extends State<NewPost> {
           Container(
             padding: const EdgeInsets.all(10),
             child: Row(
-              children: const [
+              children: [
                 CircleAvatar(
                   radius: 20,
-                  backgroundImage: NetworkImage(
-                      "https://schooloflanguages.sa.edu.au/wp-content/uploads/2017/11/placeholder-profile-sq.jpg"),
+                  backgroundImage:
+                      NetworkImage(authService.currentUser.imageUrl),
                 ),
-                SizedBox(
-                  width: 10,
-                ),
+                const SizedBox(width: 10),
                 Text(
-                  "Amr Khaled",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  authService.currentUser.name,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 16),
                 ),
               ],
             ),
@@ -100,11 +99,11 @@ class _NewPostState extends State<NewPost> {
                       }
                     },
               child: const Text("Post"),
-              style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all(Theme.of(context).primaryColor),
-                  shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5)))),
+              style: ElevatedButton.styleFrom(
+                primary: Theme.of(context).primaryColor,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5)),
+              ),
             ),
           ),
           _posting ? const LinearProgressIndicator() : const SizedBox()

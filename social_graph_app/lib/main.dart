@@ -32,9 +32,14 @@ class MyApp extends StatelessWidget {
               primaryColor: Colors.blue[700],
             ),
             home: authService.isAuthenticated
-                ? ChangeNotifierProvider<PostService>(
-                    create: (ctx) => PostService(), child: const TabsScreen())
+                ? const TabsScreen()
                 : const AuthScreen(),
+            routes: {
+              ProfileScreen.routeName: (ctx) =>
+                  ChangeNotifierProvider<PostService>(
+                      create: (ctx) => PostService(),
+                      child: const ProfileScreen()),
+            },
           ),
         ),
       ),

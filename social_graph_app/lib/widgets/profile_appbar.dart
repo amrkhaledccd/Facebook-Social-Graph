@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 
 class ProfileAppbar extends StatelessWidget {
-  const ProfileAppbar({Key? key}) : super(key: key);
+  final String title;
+  const ProfileAppbar({Key? key, required this.title}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const SliverAppBar(
+    return SliverAppBar(
       pinned: true,
       backgroundColor: Colors.white,
+      foregroundColor: Colors.black,
       centerTitle: true,
       title: Text(
-        'Amr Khaled',
-        style: TextStyle(
+        title,
+        style: const TextStyle(
           color: Colors.black,
           fontWeight: FontWeight.w500,
           fontSize: 16,
