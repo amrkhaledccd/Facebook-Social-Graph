@@ -17,6 +17,12 @@ class _NewPostState extends State<NewPost> {
   var _posting = false;
 
   @override
+  void dispose() {
+    super.dispose();
+    _textContrller.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final _postService = Provider.of<PostService>(context, listen: false);
     final authService = Provider.of<AuthService>(context, listen: false);

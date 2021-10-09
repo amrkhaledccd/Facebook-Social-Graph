@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:social_graph_app/screens/find_people_screen.dart';
 import 'package:social_graph_app/screens/groups_screen.dart';
 import 'package:social_graph_app/screens/home_screen.dart';
 import 'package:social_graph_app/screens/notification_screen.dart';
@@ -19,9 +20,9 @@ class _TabsScreenState extends State<TabsScreen> {
   List<Widget> screens = [
     const HomeScreen(),
     const GroupsScreen(),
-    const NotificationScreen(),
     ChangeNotifierProvider<PostService>(
         create: (ctx) => PostService(), child: const ProfileScreen()),
+    const FindPeopleScreen(),
   ];
 
   @override
@@ -38,9 +39,8 @@ class _TabsScreenState extends State<TabsScreen> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.group), label: 'Groups'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.notifications), label: 'Notifications'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'people'),
         ],
       ),
     );

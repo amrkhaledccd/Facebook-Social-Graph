@@ -21,4 +21,22 @@ class AssociationService {
       rethrow;
     }
   }
+
+  Future<bool> associationExists(
+      String id1, String id2, AssociationType type) async {
+    final _url =
+        "http://10.0.2.2:3004/associations/$id1/$id2?type=${describeEnum(type).toUpperCase()}";
+
+    try {
+      final response = await http.get(Uri.parse(_url), headers: {});
+
+      if (response.statusCode == 200) {
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      rethrow;
+    }
+  }
 }

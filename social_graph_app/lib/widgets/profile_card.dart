@@ -5,9 +5,38 @@ import 'package:social_graph_app/models/user.dart';
 import 'package:social_graph_app/services/association_service.dart';
 import 'package:social_graph_app/services/auth_service.dart';
 
-class ProfileCard extends StatelessWidget {
+class ProfileCard extends StatefulWidget {
   final User user;
   const ProfileCard({Key? key, required this.user}) : super(key: key);
+
+  @override
+  State<ProfileCard> createState() => _ProfileCardState();
+}
+
+class _ProfileCardState extends State<ProfileCard> {
+  var isFriendChecking = false;
+  var isFriend = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final _authService = Provider.of<AuthService>(context, listen: false);
+    final _associationService = AssociationService();
+
+    if (_authService.currentUser.id != widget.user.id) {
+      _associationService
+          .associationExists(
+            _authService.currentUser.id,
+            widget.user.id,
+            AssociationType.friend,
+          )
+          .then(
+            (value) => setState(() {
+              isFriend = value;
+            }),
+          );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,11 +58,11 @@ class ProfileCard extends StatelessWidget {
             ),
             child: CircleAvatar(
               radius: 60,
-              backgroundImage: NetworkImage(user.imageUrl),
+              backgroundImage: NetworkImage(widget.user.imageUrl),
             ),
           ),
           const SizedBox(height: 10),
-          _authService.currentUser.id == user.id
+          _authService.currentUser.id == widget.user.id
               ? ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
                     primary: Colors.grey[200],
@@ -55,7 +84,7 @@ class ProfileCard extends StatelessWidget {
                     try {
                       await AssociationService().createAssociation(
                           _authService.currentUser.id,
-                          user.id,
+                          widget.user.id,
                           AssociationType.friend);
                     } catch (error) {
                       _scaffoldMessenger.showSnackBar(
@@ -63,8 +92,8 @@ class ProfileCard extends StatelessWidget {
                       );
                     }
                   },
-                  icon: const Icon(Icons.add_outlined),
-                  label: const Text('Add friend'),
+                  icon: Icon(isFriend ? Icons.close : Icons.add_outlined),
+                  label: Text(isFriend ? "Unfriend" : 'Add friend'),
                 ),
           const SizedBox(height: 10),
         ],
