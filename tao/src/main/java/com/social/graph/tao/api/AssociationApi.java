@@ -27,4 +27,11 @@ public class AssociationApi {
             @PathVariable UUID id1, @PathVariable UUID id2, @RequestParam AssociationType type) {
         associationService.associationExists(id1, id2, type);
     }
+
+    @DeleteMapping("/{id1}/{id2}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteAssociation(
+            @PathVariable UUID id1, @PathVariable UUID id2, @RequestParam AssociationType type) {
+        associationService.deleteAssociation(id1, id2, type);
+    }
 }
