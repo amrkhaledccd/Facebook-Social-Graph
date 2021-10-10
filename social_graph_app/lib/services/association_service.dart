@@ -39,4 +39,16 @@ class AssociationService {
       rethrow;
     }
   }
+
+  Future<void> deleteAssociation(
+      String id1, String id2, AssociationType type) async {
+    final _url =
+        "http://10.0.2.2:3004/associations/$id1/$id2?type=${describeEnum(type).toUpperCase()}";
+
+    try {
+      await http.delete(Uri.parse(_url), headers: {});
+    } catch (error) {
+      rethrow;
+    }
+  }
 }

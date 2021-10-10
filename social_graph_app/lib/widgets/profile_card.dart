@@ -15,6 +15,7 @@ class ProfileCard extends StatefulWidget {
 
 class _ProfileCardState extends State<ProfileCard> {
   var isFriendChecking = false;
+  var isLoading = false;
   var isFriend = false;
 
   @override
@@ -24,6 +25,9 @@ class _ProfileCardState extends State<ProfileCard> {
     final _associationService = AssociationService();
 
     if (_authService.currentUser.id != widget.user.id) {
+      setState(() {
+        isFriendChecking = true;
+      });
       _associationService
           .associationExists(
             _authService.currentUser.id,
@@ -34,7 +38,10 @@ class _ProfileCardState extends State<ProfileCard> {
             (value) => setState(() {
               isFriend = value;
             }),
-          );
+          )
+          .whenComplete(() => setState(() {
+                isFriendChecking = false;
+              }));
     }
   }
 
@@ -67,7 +74,9 @@ class _ProfileCardState extends State<ProfileCard> {
                   style: ElevatedButton.styleFrom(
                     primary: Colors.grey[200],
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    _authService.logout();
+                  },
                   icon: const Icon(
                     Icons.logout,
                     color: Colors.black,
@@ -76,25 +85,52 @@ class _ProfileCardState extends State<ProfileCard> {
                     'Logout',
                     style: TextStyle(color: Colors.black),
                   ))
-              : ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    primary: Theme.of(context).primaryColor,
-                  ),
-                  onPressed: () async {
-                    try {
-                      await AssociationService().createAssociation(
-                          _authService.currentUser.id,
-                          widget.user.id,
-                          AssociationType.friend);
-                    } catch (error) {
-                      _scaffoldMessenger.showSnackBar(
-                        const SnackBar(content: Text("unable to create post")),
-                      );
-                    }
-                  },
-                  icon: Icon(isFriend ? Icons.close : Icons.add_outlined),
-                  label: Text(isFriend ? "Unfriend" : 'Add friend'),
-                ),
+              : isFriendChecking
+                  ? const CircularProgressIndicator()
+                  : ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        primary: isFriend
+                            ? Colors.grey[500]
+                            : Theme.of(context).primaryColor,
+                      ),
+                      onPressed: isLoading
+                          ? null
+                          : () async {
+                              final _associationService = AssociationService();
+                              setState(() {
+                                isLoading = true;
+                              });
+                              try {
+                                if (!isFriend) {
+                                  await _associationService.createAssociation(
+                                      _authService.currentUser.id,
+                                      widget.user.id,
+                                      AssociationType.friend);
+                                } else {
+                                  await _associationService.deleteAssociation(
+                                      _authService.currentUser.id,
+                                      widget.user.id,
+                                      AssociationType.friend);
+                                }
+
+                                setState(() {
+                                  isFriend = !isFriend;
+                                  isLoading = false;
+                                });
+                              } catch (error) {
+                                _scaffoldMessenger.showSnackBar(
+                                  const SnackBar(
+                                      content: Text("unable to create post")),
+                                );
+                              }
+                            },
+                      icon: Icon(isFriend ? Icons.close : Icons.add_outlined),
+                      label: Text(isLoading
+                          ? "Loading..."
+                          : isFriend
+                              ? "Unfriend"
+                              : 'Add friend'),
+                    ),
           const SizedBox(height: 10),
         ],
       ),

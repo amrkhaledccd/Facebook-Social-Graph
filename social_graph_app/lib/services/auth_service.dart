@@ -18,8 +18,13 @@ class AuthService with ChangeNotifier {
   }
 
   bool get isAuthenticated {
-    //print("inside isAuth ${_currentUser!.email}");
     return _token != null && _currentUser != null;
+  }
+
+  void logout() {
+    _token = null;
+    _currentUser = null;
+    notifyListeners();
   }
 
   Future<void> signup(Map<String, String> signupRequest) async {
@@ -74,7 +79,6 @@ class AuthService with ChangeNotifier {
 
   Future<User> findUser(String username) async {
     final url = "http://10.0.2.2:3001/users/$username";
-    print(username);
     try {
       final response = await http
           .get(Uri.parse(url), headers: {"Authorization": "Bearer $_token"});

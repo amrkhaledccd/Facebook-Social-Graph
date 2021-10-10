@@ -10,8 +10,8 @@ class HomeScreen extends StatelessWidget {
       body: Center(
         child: TextButton(
             onPressed: () {
-              Navigator.of(context)
-                  .pushNamed(ProfileScreen.routeName, arguments: "islam");
+              Navigator.of(context).pushNamed(ProfileScreen.routeName,
+                  arguments: "amrkhaledccd");
             },
             child: const Text("Go to profile screen")),
       ),
