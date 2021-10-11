@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_graph_app/exceptions/http_exception.dart';
-import 'package:social_graph_app/services/auth_service.dart';
+import 'package:social_graph_app/providers/auth_provider.dart';
 
 enum AuthMode { Signup, Login }
 
@@ -54,12 +54,12 @@ class _AuthScreenState extends State<AuthScreen> {
 
     try {
       if (_authMode == AuthMode.Login) {
-        await Provider.of<AuthService>(context, listen: false).login({
+        await Provider.of<AuthProvider>(context, listen: false).login({
           'username': _authData['username']!,
           'password': _authData['password']!,
         });
       } else {
-        await Provider.of<AuthService>(context, listen: false)
+        await Provider.of<AuthProvider>(context, listen: false)
             .signup(_authData);
 
         _switchAuthMode();

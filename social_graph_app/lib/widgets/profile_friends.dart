@@ -1,44 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_graph_app/models/user.dart';
+import 'package:social_graph_app/providers/user_provider.dart';
 import 'package:social_graph_app/screens/profile_screen.dart';
-import 'package:social_graph_app/services/association_service.dart';
-import 'package:social_graph_app/services/auth_service.dart';
 
 class ProfileFriends extends StatefulWidget {
-  final User user;
-  const ProfileFriends({Key? key, required this.user}) : super(key: key);
+  const ProfileFriends({Key? key}) : super(key: key);
 
   @override
   State<ProfileFriends> createState() => _ProfileFriendsState();
 }
 
 class _ProfileFriendsState extends State<ProfileFriends> {
-  List<User> friends = [];
-
   @override
   void initState() {
     Future.delayed(Duration.zero, () {
-      loadFriends();
+      Provider.of<UserProvider>(context, listen: false).loadUserFriends();
     });
 
     super.initState();
   }
 
-  Future<void> loadFriends() async {
-    final _authService = Provider.of<AuthService>(context, listen: false);
-    await _authService
-        .findUserFriends(_authService.currentUser.id)
-        .then((users) => setState(() {
-              friends = users;
-            }))
-        .catchError((error) => print(error));
-  }
-
   @override
   Widget build(BuildContext context) {
-    Provider.of<AssociationService>(context);
-    return friends.isEmpty
+    final _userProvider = Provider.of<UserProvider>(context);
+
+    return _userProvider.friends.isEmpty
         ? const SizedBox()
         : Container(
             width: double.infinity,
@@ -72,9 +59,9 @@ class _ProfileFriendsState extends State<ProfileFriends> {
                       crossAxisSpacing: 5,
                       mainAxisSpacing: 5,
                     ),
-                    itemCount: friends.length,
+                    itemCount: _userProvider.friends.length,
                     itemBuilder: (ctx, i) =>
-                        FriendItem(user: friends[i], onback: loadFriends),
+                        FriendItem(user: _userProvider.friends[i]),
                   )
                 ],
               ),
@@ -85,9 +72,7 @@ class _ProfileFriendsState extends State<ProfileFriends> {
 
 class FriendItem extends StatelessWidget {
   final User user;
-  final Function onback;
-  const FriendItem({Key? key, required this.user, required this.onback})
-      : super(key: key);
+  const FriendItem({Key? key, required this.user}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +80,7 @@ class FriendItem extends StatelessWidget {
       onTap: () async {
         await Navigator.of(context)
             .pushNamed(ProfileScreen.routeName, arguments: user.username);
-        onback();
+        Provider.of<UserProvider>(context, listen: false).loadUserFriends();
       },
       child: Card(
           shape: RoundedRectangleBorder(

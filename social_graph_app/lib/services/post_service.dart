@@ -1,33 +1,23 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/post.dart';
 
-class PostService with ChangeNotifier {
-  List<Post> _items = [];
-
-  List<Post> get posts {
-    return [..._items];
-  }
-
-  Future<void> findUserPosts(String userId) async {
+class PostService {
+  Future<List<Post>> findUserPosts(String userId) async {
     final url = "http://10.0.2.2:3004/objects/$userId/adjacents?type=POST";
 
     try {
       final response = await http.get(Uri.parse(url));
-      if (response.statusCode < 300) {
+      List<Post> posts = [];
+      if (response.statusCode < 400) {
         final fetchedPosts = json.decode(response.body);
-        List<Post> posts = [];
 
         fetchedPosts.forEach(
             (post) => {posts.add(Post(post["id"], post["data"]["text"]))});
-
-        _items = posts;
       }
-
-      notifyListeners();
+      return posts;
     } catch (error) {
       rethrow;
     }

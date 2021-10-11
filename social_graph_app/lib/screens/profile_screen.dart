@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:social_graph_app/models/user.dart';
-import 'package:social_graph_app/services/auth_service.dart';
+import 'package:social_graph_app/providers/auth_provider.dart';
+import 'package:social_graph_app/providers/post_provider.dart';
+import 'package:social_graph_app/providers/user_provider.dart';
 import 'package:social_graph_app/widgets/profile_card.dart';
 import 'package:social_graph_app/widgets/profile_friends.dart';
 
@@ -23,7 +24,6 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   var _loading = false;
-  User? user;
 
   @override
   void initState() {
@@ -33,22 +33,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
-  Future<User> loadUser() async {
-    final authService = Provider.of<AuthService>(context, listen: false);
+  Future<void> loadUser() async {
+    final _userProvider = Provider.of<UserProvider>(context, listen: false);
+    final _authProvider = Provider.of<AuthProvider>(context, listen: false);
+
     final username = ModalRoute.of(context)!.settings.arguments as String?;
 
-    if (user == null) {
+    if (_userProvider.user == null) {
       if (username == null) {
-        user = authService.currentUser;
+        await _userProvider.loadUser("", "", _authProvider.currentUser);
       } else {
-        user = await authService.findUser(username);
+        await _userProvider.loadUser(username, _authProvider.token, null);
       }
     }
-    return user!;
   }
 
   Future<void> _loadPosts() async {
-    final postService = Provider.of<PostService>(context, listen: false);
+    final _postProvider = Provider.of<PostProvider>(context, listen: false);
+    final _userProvider = Provider.of<UserProvider>(context, listen: false);
+
     await loadUser();
 
     setState(() {
@@ -56,7 +59,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
 
     try {
-      await postService.findUserPosts(user!.id);
+      await _postProvider.findUserPosts(_userProvider.user!.id);
       setState(() {
         _loading = false;
       });
@@ -68,23 +71,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   List<Widget> _buildListItems() {
-    final postService = Provider.of<PostService>(context, listen: false);
-    return postService.posts
-        .map((post) => PostWidget(
-              postText: post.text,
-              user: user!,
-            ))
+    final _postProvider = Provider.of<PostProvider>(context, listen: false);
+
+    return _postProvider.posts
+        .map((post) => PostWidget(postText: post.text))
         .toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    final postService = Provider.of<PostService>(context);
-    final authService = Provider.of<AuthService>(context);
+    final _postProvider = Provider.of<PostProvider>(context);
+    final _authProvider = Provider.of<AuthProvider>(context);
+    final _userProvider = Provider.of<UserProvider>(context, listen: false);
 
     return Scaffold(
       backgroundColor: Colors.blueGrey[50],
-      body: user == null
+      body: _userProvider.user == null
           ? const Center(
               child: CircularProgressIndicator(),
             )
@@ -93,14 +95,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 onRefresh: _loadPosts,
                 child: CustomScrollView(
                   slivers: [
-                    ProfileAppbar(title: user!.name),
-                    SliverToBoxAdapter(
-                      child: ProfileCard(user: user!),
+                    const ProfileAppbar(),
+                    const SliverToBoxAdapter(
+                      child: ProfileCard(),
                     ),
-                    SliverToBoxAdapter(
-                      child: ProfileFriends(user: user!),
+                    const SliverToBoxAdapter(
+                      child: ProfileFriends(),
                     ),
-                    if (authService.currentUser.id == user!.id)
+                    if (_authProvider.currentUser.id == _userProvider.user!.id)
                       const SliverToBoxAdapter(
                         child: NewPost(),
                       ),
@@ -124,7 +126,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                             ),
                           )
-                        : postService.posts.isEmpty
+                        : _postProvider.posts.isEmpty
                             ? SliverFillRemaining(
                                 child: Container(
                                   color: Colors.white,

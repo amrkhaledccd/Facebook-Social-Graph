@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_graph_app/models/association_type.dart';
-import 'package:social_graph_app/models/user.dart';
+import 'package:social_graph_app/providers/auth_provider.dart';
+import 'package:social_graph_app/providers/user_provider.dart';
 import 'package:social_graph_app/services/association_service.dart';
-import 'package:social_graph_app/services/auth_service.dart';
 
 class ProfileCard extends StatefulWidget {
-  final User user;
-  const ProfileCard({Key? key, required this.user}) : super(key: key);
+  const ProfileCard({Key? key}) : super(key: key);
 
   @override
   State<ProfileCard> createState() => _ProfileCardState();
@@ -21,18 +20,20 @@ class _ProfileCardState extends State<ProfileCard> {
   @override
   void initState() {
     Future.delayed(Duration.zero, () {
-      final _authService = Provider.of<AuthService>(context, listen: false);
+      final _authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final _userProvider = Provider.of<UserProvider>(context, listen: false);
+
       final _associationService =
           Provider.of<AssociationService>(context, listen: false);
 
-      if (_authService.currentUser.id != widget.user.id) {
+      if (_authProvider.currentUser.id != _userProvider.user!.id) {
         setState(() {
           isFriendChecking = true;
         });
         _associationService
             .associationExists(
-              _authService.currentUser.id,
-              widget.user.id,
+              _authProvider.currentUser.id,
+              _userProvider.user!.id,
               AssociationType.friend,
             )
             .then(
@@ -50,7 +51,9 @@ class _ProfileCardState extends State<ProfileCard> {
 
   @override
   Widget build(BuildContext context) {
-    final _authService = Provider.of<AuthService>(context, listen: false);
+    final _authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final _userProvider = Provider.of<UserProvider>(context, listen: false);
+
     final _associationService =
         Provider.of<AssociationService>(context, listen: false);
     final _scaffoldMessenger = ScaffoldMessenger.of(context);
@@ -70,17 +73,17 @@ class _ProfileCardState extends State<ProfileCard> {
             ),
             child: CircleAvatar(
               radius: 60,
-              backgroundImage: NetworkImage(widget.user.imageUrl),
+              backgroundImage: NetworkImage(_userProvider.user!.imageUrl),
             ),
           ),
           const SizedBox(height: 10),
-          _authService.currentUser.id == widget.user.id
+          _authProvider.currentUser.id == _userProvider.user!.id
               ? ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
                     primary: Colors.grey[200],
                   ),
                   onPressed: () {
-                    _authService.logout();
+                    _authProvider.logout();
                   },
                   icon: const Icon(
                     Icons.logout,
@@ -107,13 +110,13 @@ class _ProfileCardState extends State<ProfileCard> {
                               try {
                                 if (!isFriend) {
                                   await _associationService.createAssociation(
-                                      _authService.currentUser.id,
-                                      widget.user.id,
+                                      _authProvider.currentUser.id,
+                                      _userProvider.user!.id,
                                       AssociationType.friend);
                                 } else {
                                   await _associationService.deleteAssociation(
-                                      _authService.currentUser.id,
-                                      widget.user.id,
+                                      _authProvider.currentUser.id,
+                                      _userProvider.user!.id,
                                       AssociationType.friend);
                                 }
 

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_graph_app/models/association_type.dart';
+import 'package:social_graph_app/providers/auth_provider.dart';
+import 'package:social_graph_app/providers/post_provider.dart';
 import 'package:social_graph_app/services/association_service.dart';
-import 'package:social_graph_app/services/auth_service.dart';
 import 'package:social_graph_app/services/post_service.dart';
 
 class NewPost extends StatefulWidget {
@@ -24,8 +25,8 @@ class _NewPostState extends State<NewPost> {
 
   @override
   Widget build(BuildContext context) {
-    final _postService = Provider.of<PostService>(context, listen: false);
-    final _authService = Provider.of<AuthService>(context, listen: false);
+    final _postProvider = Provider.of<PostProvider>(context, listen: false);
+    final _authProvider = Provider.of<AuthProvider>(context, listen: false);
     final _associationService =
         Provider.of<AssociationService>(context, listen: false);
 
@@ -42,11 +43,11 @@ class _NewPostState extends State<NewPost> {
                 CircleAvatar(
                   radius: 20,
                   backgroundImage:
-                      NetworkImage(_authService.currentUser.imageUrl),
+                      NetworkImage(_authProvider.currentUser.imageUrl),
                 ),
                 const SizedBox(width: 10),
                 Text(
-                  _authService.currentUser.name,
+                  _authProvider.currentUser.name,
                   style: const TextStyle(
                       fontWeight: FontWeight.bold, fontSize: 16),
                 ),
@@ -81,16 +82,16 @@ class _NewPostState extends State<NewPost> {
                         _posting = true;
                       });
                       try {
-                        final _post = await _postService
+                        final _post = await _postProvider
                             .createPost(_textContrller.value.text);
 
                         await _associationService.createAssociation(
-                            _authService.currentUser.id,
+                            _authProvider.currentUser.id,
                             _post.id,
                             AssociationType.created);
 
-                        await _postService
-                            .findUserPosts(_authService.currentUser.id);
+                        await _postProvider
+                            .findUserPosts(_authProvider.currentUser.id);
 
                         setState(() {
                           _textContrller.clear();

@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:social_graph_app/models/user.dart';
+import 'package:provider/provider.dart';
+import 'package:social_graph_app/providers/user_provider.dart';
 
 class PostWidget extends StatelessWidget {
   final String postText;
-  final User user;
-  const PostWidget({Key? key, required this.postText, required this.user})
-      : super(key: key);
+  const PostWidget({Key? key, required this.postText}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final _userProvider = Provider.of<UserProvider>(context, listen: false);
+
     return Container(
       color: Colors.white,
       margin: const EdgeInsets.only(bottom: 5),
@@ -18,9 +19,9 @@ class PostWidget extends StatelessWidget {
           ListTile(
             leading: CircleAvatar(
               radius: 20,
-              backgroundImage: NetworkImage(user.imageUrl),
+              backgroundImage: NetworkImage(_userProvider.user!.imageUrl),
             ),
-            title: Text(user.name),
+            title: Text(_userProvider.user!.name),
             subtitle: Text(DateFormat.yMMMd().format(DateTime.now())),
             trailing: const Icon(Icons.more_horiz),
           ),

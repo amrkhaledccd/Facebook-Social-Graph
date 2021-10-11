@@ -1,32 +1,10 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:social_graph_app/exceptions/http_exception.dart';
 import 'package:social_graph_app/models/user.dart';
 
-class AuthService with ChangeNotifier {
-  String? _token;
-  User? _currentUser;
-
-  User get currentUser {
-    return _currentUser!;
-  }
-
-  String get token {
-    return _token!;
-  }
-
-  bool get isAuthenticated {
-    return _token != null && _currentUser != null;
-  }
-
-  void logout() {
-    _token = null;
-    _currentUser = null;
-    notifyListeners();
-  }
-
+class AuthService {
   Future<void> signup(Map<String, String> signupRequest) async {
     const url = "http://10.0.2.2:3001/users";
 
@@ -46,7 +24,7 @@ class AuthService with ChangeNotifier {
     }
   }
 
-  Future<void> login(Map<String, String> loginRequest) async {
+  Future<Map<String, dynamic>> login(Map<String, String> loginRequest) async {
     const url = "http://10.0.2.2:3001/signin";
 
     try {
@@ -63,25 +41,26 @@ class AuthService with ChangeNotifier {
       }
 
       final body = json.decode(response.body);
-      _token = body['accessToken'];
-      _currentUser = User(
-        body['user']['id'],
-        body['user']['data']['username'],
-        body['user']['data']['email'],
-        body['user']['data']['name'],
-        body['user']['data']['imageUrl'],
-      );
-      notifyListeners();
+      return {
+        'token': body['accessToken'],
+        'user': User(
+          body['user']['id'],
+          body['user']['data']['username'],
+          body['user']['data']['email'],
+          body['user']['data']['name'],
+          body['user']['data']['imageUrl'],
+        )
+      };
     } catch (error) {
       rethrow;
     }
   }
 
-  Future<User> findUser(String username) async {
+  Future<User> findUser(String username, String token) async {
     final url = "http://10.0.2.2:3001/users/$username";
     try {
       final response = await http
-          .get(Uri.parse(url), headers: {"Authorization": "Bearer $_token"});
+          .get(Uri.parse(url), headers: {"Authorization": "Bearer $token"});
 
       if (response.statusCode >= 400) {
         throw HttpException("Unauthorized");

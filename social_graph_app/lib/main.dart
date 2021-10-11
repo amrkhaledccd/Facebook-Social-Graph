@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:social_graph_app/providers/auth_provider.dart';
+import 'package:social_graph_app/providers/post_provider.dart';
+import 'package:social_graph_app/providers/user_provider.dart';
 import 'package:social_graph_app/screens/auth_screen.dart';
 import 'package:social_graph_app/screens/profile_screen.dart';
 import 'package:social_graph_app/screens/tabs_screen.dart';
 import 'package:social_graph_app/services/association_service.dart';
-import 'package:social_graph_app/services/auth_service.dart';
-import 'package:social_graph_app/services/post_service.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,14 +20,14 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (ctx) => AuthService(),
+          create: (ctx) => AuthProvider(),
         ),
         ChangeNotifierProvider(
           create: (ctx) => AssociationService(),
         )
       ],
-      child: Consumer<AuthService>(
-        builder: (_, authService, _ch) => GestureDetector(
+      child: Consumer<AuthProvider>(
+        builder: (_, authPrvider, _ch) => GestureDetector(
           onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
           child: MaterialApp(
             debugShowCheckedModeBanner: false,
@@ -34,14 +35,21 @@ class MyApp extends StatelessWidget {
             theme: ThemeData(
               primaryColor: Colors.blue[700],
             ),
-            home: authService.isAuthenticated
+            home: authPrvider.isAuthenticated
                 ? const TabsScreen()
                 : const AuthScreen(),
             routes: {
-              ProfileScreen.routeName: (ctx) =>
-                  ChangeNotifierProvider<PostService>(
-                      create: (ctx) => PostService(),
-                      child: const ProfileScreen()),
+              ProfileScreen.routeName: (ctx) => MultiProvider(
+                    providers: [
+                      ChangeNotifierProvider<PostProvider>(
+                        create: (ctx) => PostProvider(),
+                      ),
+                      ChangeNotifierProvider<UserProvider>(
+                        create: (ctx) => UserProvider(),
+                      ),
+                    ],
+                    child: const ProfileScreen(),
+                  ),
             },
           ),
         ),
