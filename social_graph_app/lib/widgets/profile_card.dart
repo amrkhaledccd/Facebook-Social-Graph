@@ -20,34 +20,39 @@ class _ProfileCardState extends State<ProfileCard> {
 
   @override
   void initState() {
-    super.initState();
-    final _authService = Provider.of<AuthService>(context, listen: false);
-    final _associationService = AssociationService();
+    Future.delayed(Duration.zero, () {
+      final _authService = Provider.of<AuthService>(context, listen: false);
+      final _associationService =
+          Provider.of<AssociationService>(context, listen: false);
 
-    if (_authService.currentUser.id != widget.user.id) {
-      setState(() {
-        isFriendChecking = true;
-      });
-      _associationService
-          .associationExists(
-            _authService.currentUser.id,
-            widget.user.id,
-            AssociationType.friend,
-          )
-          .then(
-            (value) => setState(() {
-              isFriend = value;
-            }),
-          )
-          .whenComplete(() => setState(() {
-                isFriendChecking = false;
-              }));
-    }
+      if (_authService.currentUser.id != widget.user.id) {
+        setState(() {
+          isFriendChecking = true;
+        });
+        _associationService
+            .associationExists(
+              _authService.currentUser.id,
+              widget.user.id,
+              AssociationType.friend,
+            )
+            .then(
+              (value) => setState(() {
+                isFriend = value;
+              }),
+            )
+            .whenComplete(() => setState(() {
+                  isFriendChecking = false;
+                }));
+      }
+    });
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     final _authService = Provider.of<AuthService>(context, listen: false);
+    final _associationService =
+        Provider.of<AssociationService>(context, listen: false);
     final _scaffoldMessenger = ScaffoldMessenger.of(context);
 
     return Container(
@@ -96,7 +101,6 @@ class _ProfileCardState extends State<ProfileCard> {
                       onPressed: isLoading
                           ? null
                           : () async {
-                              final _associationService = AssociationService();
                               setState(() {
                                 isLoading = true;
                               });

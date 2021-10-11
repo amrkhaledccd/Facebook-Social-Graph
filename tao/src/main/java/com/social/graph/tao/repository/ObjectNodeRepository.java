@@ -13,9 +13,16 @@ public interface ObjectNodeRepository extends Neo4jRepository<ObjectNode, UUID> 
     @Query("MATCH (n:ObjectNode{id:$objectId}) -[r]-> (p:ObjectNode{type:$type}) return p")
     List<ObjectNode> findAdjacentObjects(UUID objectId, ObjectType type);
 
-    @Query("MATCH (n:ObjectNode{id:$startObjId}) -[r:relate_to{type:$type}]-> (m:ObjectNode{id:$endObjId}) RETURN COUNT(r) > 0")
+    @Query("MATCH (n:ObjectNode{id:$objectId}) -[r]-> (p:ObjectNode{type:$type}) return p limit $limit")
+    List<ObjectNode> findAdjacentObjectsWithLimit(UUID objectId, int limit, ObjectType type);
+
+    @Query("MATCH (:ObjectNode{id: $objId1}) -[:relate_to]->(m:ObjectNode{type: $type})<-[:relate_to]- " +
+            "(:ObjectNode{id: $objId2}) return m limit $limit")
+    List<ObjectNode> findMutualObjectsWithLimit(UUID objId1, UUID objId2, int limit, ObjectType type);
+
+    @Query("MATCH (n:ObjectNode{id:$startObjId}) -[r:relate_to{type:$type}]- (m:ObjectNode{id:$endObjId}) RETURN COUNT(r) > 0")
     boolean associationExists(UUID startObjId, UUID endObjId, AssociationType type);
 
-    @Query("MATCH (:ObjectNode{id: $objId1}) -[r:relate_to{type: $type}]- (:ObjectNode{id: $objId2}) delete r;")
+    @Query("MATCH (:ObjectNode{id: $objId1}) -[r:relate_to{type: $type}]- (:ObjectNode{id: $objId2}) delete r")
     void deleteAssociation(UUID objId1, UUID objId2, AssociationType type);
 }

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:social_graph_app/screens/auth_screen.dart';
 import 'package:social_graph_app/screens/profile_screen.dart';
 import 'package:social_graph_app/screens/tabs_screen.dart';
+import 'package:social_graph_app/services/association_service.dart';
 import 'package:social_graph_app/services/auth_service.dart';
 import 'package:social_graph_app/services/post_service.dart';
 
@@ -13,7 +14,6 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -21,6 +21,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (ctx) => AuthService(),
         ),
+        ChangeNotifierProvider(
+          create: (ctx) => AssociationService(),
+        )
       ],
       child: Consumer<AuthService>(
         builder: (_, authService, _ch) => GestureDetector(

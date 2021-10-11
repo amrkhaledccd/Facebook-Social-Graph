@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -31,9 +32,16 @@ public class DefaultObjectNodeService implements ObjectNodeService {
     }
 
     @Override
-    public List<ObjectNode> findAdjacentObjects(UUID objectId, ObjectType type) {
+    public List<ObjectNode> findAdjacentObjects(UUID objectId, Optional<Integer> limit,  ObjectType type) {
         findObjectById(objectId);
-        return repository.findAdjacentObjects(objectId, type);
+        return limit
+                .map(value -> repository.findAdjacentObjectsWithLimit(objectId, value, type))
+                .orElse(repository.findAdjacentObjects(objectId, type));
+    }
+
+    @Override
+    public List<ObjectNode> findMutualObjects(UUID objId1, UUID objId2, int limit, ObjectType type) {
+        return repository.findMutualObjectsWithLimit(objId1, objId2, limit, type);
     }
 
     @Override

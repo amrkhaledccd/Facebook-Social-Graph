@@ -101,4 +101,33 @@ class AuthService with ChangeNotifier {
       rethrow;
     }
   }
+
+  Future<List<User>> findUserFriends(String userId) async {
+    final url =
+        "http://10.0.2.2:3004/objects/$userId/adjacents?type=USER&limit=6";
+
+    try {
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode >= 400) {
+        throw HttpException("Unauthorized");
+      } else if (response.statusCode >= 500) {
+        throw HttpException("Something went wrong");
+      }
+
+      final body = json.decode(response.body) as List<dynamic>;
+
+      return body
+          .map((userData) => User(
+                userData['id'],
+                userData['data']['username'],
+                userData['data']['email'],
+                userData['data']['name'],
+                userData['data']['imageUrl'],
+              ))
+          .toList();
+    } catch (error) {
+      rethrow;
+    }
+  }
 }

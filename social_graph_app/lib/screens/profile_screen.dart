@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:social_graph_app/models/user.dart';
 import 'package:social_graph_app/services/auth_service.dart';
 import 'package:social_graph_app/widgets/profile_card.dart';
+import 'package:social_graph_app/widgets/profile_friends.dart';
 
 import '../services/post_service.dart';
 import '../widgets/new_post.dart';
@@ -95,6 +96,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ProfileAppbar(title: user!.name),
                     SliverToBoxAdapter(
                       child: ProfileCard(user: user!),
+                    ),
+                    SliverToBoxAdapter(
+                      child: ProfileFriends(user: user!),
                     ),
                     if (authService.currentUser.id == user!.id)
                       const SliverToBoxAdapter(

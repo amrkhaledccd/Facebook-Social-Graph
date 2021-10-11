@@ -39,6 +39,7 @@ public class DefaultAssociationService implements AssociationService {
     @Override
     public void deleteAssociation(UUID objId1, UUID objId2, AssociationType type) {
         repository.deleteAssociation(objId1, objId2, type);
+        repository.deleteAssociation(objId2, objId1, type.reverseAssociation());
     }
 
     private ObjectNode findObjectById(UUID id) {

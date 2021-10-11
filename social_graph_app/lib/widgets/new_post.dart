@@ -25,7 +25,9 @@ class _NewPostState extends State<NewPost> {
   @override
   Widget build(BuildContext context) {
     final _postService = Provider.of<PostService>(context, listen: false);
-    final authService = Provider.of<AuthService>(context, listen: false);
+    final _authService = Provider.of<AuthService>(context, listen: false);
+    final _associationService =
+        Provider.of<AssociationService>(context, listen: false);
 
     final _scaffoldMessenger = ScaffoldMessenger.of(context);
 
@@ -40,11 +42,11 @@ class _NewPostState extends State<NewPost> {
                 CircleAvatar(
                   radius: 20,
                   backgroundImage:
-                      NetworkImage(authService.currentUser.imageUrl),
+                      NetworkImage(_authService.currentUser.imageUrl),
                 ),
                 const SizedBox(width: 10),
                 Text(
-                  authService.currentUser.name,
+                  _authService.currentUser.name,
                   style: const TextStyle(
                       fontWeight: FontWeight.bold, fontSize: 16),
                 ),
@@ -82,13 +84,13 @@ class _NewPostState extends State<NewPost> {
                         final _post = await _postService
                             .createPost(_textContrller.value.text);
 
-                        await AssociationService().createAssociation(
-                            authService.currentUser.id,
+                        await _associationService.createAssociation(
+                            _authService.currentUser.id,
                             _post.id,
                             AssociationType.created);
 
                         await _postService
-                            .findUserPosts(authService.currentUser.id);
+                            .findUserPosts(_authService.currentUser.id);
 
                         setState(() {
                           _textContrller.clear();

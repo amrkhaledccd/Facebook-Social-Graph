@@ -5,12 +5,14 @@ import com.social.graph.tao.model.ObjectType;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ObjectNodeService {
     ObjectNode createObject(ObjectType type, Map<String, String> data);
     ObjectNode findObjectById(UUID objectId);
-    List<ObjectNode> findAdjacentObjects(UUID objectId, ObjectType type);
+    List<ObjectNode> findAdjacentObjects(UUID objectId, Optional<Integer> limit, ObjectType type);
+    List<ObjectNode> findMutualObjects(UUID objId1, UUID objId2, int limit, ObjectType type);
     void updateObject(UUID objectId);
     void deleteObject(UUID objectId);
 }
