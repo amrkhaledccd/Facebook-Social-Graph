@@ -40,8 +40,18 @@ public class DefaultObjectNodeService implements ObjectNodeService {
     }
 
     @Override
+    public long countAdjacentObjects(UUID objectId, ObjectType type) {
+        return repository.countAdjacentObjects(objectId, type);
+    }
+
+    @Override
     public List<ObjectNode> findMutualObjects(UUID objId1, UUID objId2, int limit, ObjectType type) {
         return repository.findMutualObjectsWithLimit(objId1, objId2, limit, type);
+    }
+
+    @Override
+    public long countMutualObjects(UUID objId1, UUID objId2, ObjectType type) {
+        return repository.countMutualObjectsWith(objId1, objId2, type);
     }
 
     @Override

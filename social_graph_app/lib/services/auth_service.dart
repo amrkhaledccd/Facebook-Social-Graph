@@ -34,10 +34,10 @@ class AuthService {
         headers: {'content-type': 'application/json'},
       );
 
-      if (response.statusCode == 401) {
-        throw HttpException("Invalid username or password");
+      if (response.statusCode >= 500) {
+        throw HttpException("Something went wrong");
       } else if (response.statusCode >= 400) {
-        throw HttpException("Unable to authenticate");
+        throw HttpException("Unauthorized");
       }
 
       final body = json.decode(response.body);
@@ -62,10 +62,10 @@ class AuthService {
       final response = await http
           .get(Uri.parse(url), headers: {"Authorization": "Bearer $token"});
 
-      if (response.statusCode >= 400) {
-        throw HttpException("Unauthorized");
-      } else if (response.statusCode >= 500) {
+      if (response.statusCode >= 500) {
         throw HttpException("Something went wrong");
+      } else if (response.statusCode >= 400) {
+        throw HttpException("Unauthorized");
       }
 
       final body = json.decode(response.body);
@@ -88,10 +88,10 @@ class AuthService {
     try {
       final response = await http.get(Uri.parse(url));
 
-      if (response.statusCode >= 400) {
-        throw HttpException("Unauthorized");
-      } else if (response.statusCode >= 500) {
+      if (response.statusCode >= 500) {
         throw HttpException("Something went wrong");
+      } else if (response.statusCode >= 400) {
+        throw HttpException("Unauthorized");
       }
 
       final body = json.decode(response.body) as List<dynamic>;
@@ -105,6 +105,74 @@ class AuthService {
                 userData['data']['imageUrl'],
               ))
           .toList();
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  Future<num> countUserFriends(String userId) async {
+    final url =
+        "http://10.0.2.2:3004/objects/$userId/adjacents/count?type=USER";
+
+    try {
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode >= 500) {
+        throw HttpException("Something went wrong");
+      } else if (response.statusCode >= 400) {
+        throw HttpException("Unauthorized");
+      }
+
+      return json.decode(response.body) as num;
+    } catch (error) {
+      print(error);
+      rethrow;
+    }
+  }
+
+  Future<List<User>> findMutualFriends(String userId1, String userId2) async {
+    final url =
+        "http://10.0.2.2:3004/objects/$userId1/mutual/$userId2?type=USER&limit=6";
+
+    try {
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode >= 500) {
+        throw HttpException("Something went wrong");
+      } else if (response.statusCode >= 400) {
+        throw HttpException("Unauthorized");
+      }
+
+      final body = json.decode(response.body) as List<dynamic>;
+
+      return body
+          .map((userData) => User(
+                userData['id'],
+                userData['data']['username'],
+                userData['data']['email'],
+                userData['data']['name'],
+                userData['data']['imageUrl'],
+              ))
+          .toList();
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  Future<num> countMutualFriends(String userId1, String userId2) async {
+    final url =
+        "http://10.0.2.2:3004/objects/$userId1/mutual/$userId2/count?type=USER";
+
+    try {
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode >= 500) {
+        throw HttpException("Something went wrong");
+      } else if (response.statusCode >= 400) {
+        throw HttpException("Unauthorized");
+      }
+
+      return json.decode(response.body) as num;
     } catch (error) {
       rethrow;
     }

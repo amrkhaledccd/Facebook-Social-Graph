@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_graph_app/models/user.dart';
+import 'package:social_graph_app/providers/auth_provider.dart';
 import 'package:social_graph_app/providers/user_provider.dart';
 import 'package:social_graph_app/screens/profile_screen.dart';
 
@@ -15,7 +16,16 @@ class _ProfileFriendsState extends State<ProfileFriends> {
   @override
   void initState() {
     Future.delayed(Duration.zero, () {
-      Provider.of<UserProvider>(context, listen: false).loadUserFriends();
+      final _userProvider = Provider.of<UserProvider>(context, listen: false);
+      final _authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+      if (_userProvider.user!.id == _authProvider.currentUser.id) {
+        _userProvider.loadUserFriends();
+        _userProvider.countUserFriends();
+      } else {
+        _userProvider.loadMutualFriends(_authProvider.currentUser.id);
+        _userProvider.countMutualFriends(_authProvider.currentUser.id);
+      }
     });
 
     super.initState();
@@ -24,6 +34,7 @@ class _ProfileFriendsState extends State<ProfileFriends> {
   @override
   Widget build(BuildContext context) {
     final _userProvider = Provider.of<UserProvider>(context);
+    final _authProvider = Provider.of<AuthProvider>(context, listen: false);
 
     return _userProvider.friends.isEmpty
         ? const SizedBox()
@@ -45,7 +56,7 @@ class _ProfileFriendsState extends State<ProfileFriends> {
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    '4 friends',
+                    '${_userProvider.friendsCount} ${_userProvider.user!.id == _authProvider.currentUser.id ? "friends" : "mutual friends"}',
                     style: Theme.of(context).textTheme.subtitle2,
                   ),
                   const SizedBox(height: 10),
@@ -80,7 +91,15 @@ class FriendItem extends StatelessWidget {
       onTap: () async {
         await Navigator.of(context)
             .pushNamed(ProfileScreen.routeName, arguments: user.username);
-        Provider.of<UserProvider>(context, listen: false).loadUserFriends();
+        final _userProvider = Provider.of<UserProvider>(context, listen: false);
+        final _authProvider = Provider.of<AuthProvider>(context, listen: false);
+        if (_authProvider.currentUser.id == _userProvider.user!.id) {
+          _userProvider.loadUserFriends();
+          _userProvider.countUserFriends();
+        } else {
+          _userProvider.loadMutualFriends(_authProvider.currentUser.id);
+          _userProvider.countMutualFriends(_authProvider.currentUser.id);
+        }
       },
       child: Card(
           shape: RoundedRectangleBorder(

@@ -28,6 +28,13 @@ public class ObjectNodeApi {
         return objectNodeService.findAdjacentObjects(objectId, limit, type);
     }
 
+    @GetMapping("/{objectId}/adjacents/count")
+    public long countAdjacentObjects(
+            @PathVariable UUID objectId,
+            @RequestParam ObjectType type) {
+        return objectNodeService.countAdjacentObjects(objectId, type);
+    }
+
     @GetMapping("/{objectId1}/mutual/{objectId2}")
     public List<ObjectNode> findMutualObjects(
             @PathVariable UUID objectId1,
@@ -35,6 +42,14 @@ public class ObjectNodeApi {
             @RequestParam int limit,
             @RequestParam ObjectType type) {
         return objectNodeService.findMutualObjects(objectId1, objectId2, limit, type);
+    }
+
+    @GetMapping("/{objectId1}/mutual/{objectId2}/count")
+    public long countMutualObjects(
+            @PathVariable UUID objectId1,
+            @PathVariable UUID objectId2,
+            @RequestParam ObjectType type) {
+        return objectNodeService.countMutualObjects(objectId1, objectId2, type);
     }
 
     @PostMapping
