@@ -14,8 +14,13 @@ class PostService {
       if (response.statusCode < 400) {
         final fetchedPosts = json.decode(response.body);
 
-        fetchedPosts.forEach(
-            (post) => {posts.add(Post(post["id"], post["data"]["text"]))});
+        fetchedPosts.forEach((post) => {
+              posts.add(Post(
+                post["id"],
+                post["data"]["text"],
+                post["data"]["url"] ?? "",
+              ))
+            });
       }
       return posts;
     } catch (error) {
@@ -23,22 +28,32 @@ class PostService {
     }
   }
 
-  Future<Post> createPost(String text) async {
+  Future<Post> createPost(String text, String postUrl) async {
     const url = "http://10.0.2.2:3004/objects";
+
+    Map<String, String> data = {'text': text};
+
+    if (postUrl.isNotEmpty) {
+      data.putIfAbsent('url', () => postUrl);
+    }
 
     try {
       final createObjRes = await http.post(
         Uri.parse(url),
         body: json.encode({
           "type": "POST",
-          "data": {"text": text}
+          "data": data,
         }),
         headers: {'content-type': 'application/json'},
       );
 
       final createObjBody = json.decode(createObjRes.body);
 
-      return Post(createObjBody["id"], createObjBody["data"]["text"]);
+      return Post(
+        createObjBody["id"],
+        createObjBody["data"]["text"],
+        createObjBody["data"]["url"] ?? "",
+      );
     } catch (error) {
       rethrow;
     }

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:link_previewer_aad/link_previewer_aad.dart';
 import 'package:provider/provider.dart';
+
 import 'package:social_graph_app/models/association_type.dart';
 import 'package:social_graph_app/providers/auth_provider.dart';
 import 'package:social_graph_app/providers/post_provider.dart';
 import 'package:social_graph_app/services/association_service.dart';
-import 'package:social_graph_app/services/post_service.dart';
 
 class NewPost extends StatefulWidget {
   const NewPost({Key? key}) : super(key: key);
@@ -16,11 +17,27 @@ class NewPost extends StatefulWidget {
 class _NewPostState extends State<NewPost> {
   final _textContrller = TextEditingController();
   var _posting = false;
+  var _detectedUrl = "";
 
   @override
   void dispose() {
     super.dispose();
     _textContrller.dispose();
+    _detectedUrl = "";
+  }
+
+  void _detectUrl(String value) {
+    if (_detectedUrl.isNotEmpty) {
+      return;
+    }
+    try {
+      final exp = RegExp(r'(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-?=%.]+');
+      final match = exp.allMatches(value).first;
+
+      setState(() {
+        _detectedUrl = value.substring(match.start, match.end);
+      });
+    } catch (error) {}
   }
 
   @override
@@ -60,7 +77,10 @@ class _NewPostState extends State<NewPost> {
               minLines: 2,
               maxLines: 100,
               controller: _textContrller,
-              onChanged: (value) => setState(() {}),
+              onChanged: (value) {
+                _detectUrl(value);
+                setState(() {});
+              },
               decoration: const InputDecoration(
                 hintText: "What is on your mind?",
                 hintStyle: TextStyle(fontSize: 18),
@@ -71,6 +91,17 @@ class _NewPostState extends State<NewPost> {
               ),
             ),
           ),
+          if (_detectedUrl.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.all(5.0),
+              child: LinkPreviewerAad(
+                link: _detectedUrl,
+                direction: ContentDirection.horizontal,
+                borderColor: Colors.black12,
+                borderRadius: 8,
+                bodyTextColor: Colors.black54,
+              ),
+            ),
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(10),
@@ -82,8 +113,8 @@ class _NewPostState extends State<NewPost> {
                         _posting = true;
                       });
                       try {
-                        final _post = await _postProvider
-                            .createPost(_textContrller.value.text);
+                        final _post = await _postProvider.createPost(
+                            _textContrller.value.text, _detectedUrl);
 
                         await _associationService.createAssociation(
                             _authProvider.currentUser.id,
@@ -104,6 +135,7 @@ class _NewPostState extends State<NewPost> {
                       } finally {
                         setState(() {
                           _posting = false;
+                          _detectedUrl = "";
                         });
                       }
                     },

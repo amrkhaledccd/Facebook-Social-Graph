@@ -74,7 +74,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final _postProvider = Provider.of<PostProvider>(context, listen: false);
 
     return _postProvider.posts
-        .map((post) => PostWidget(postText: post.text))
+        .map((post) => PostWidget(postText: post.text, postUrl: post.url))
         .toList();
   }
 

@@ -16,7 +16,7 @@ class PostProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<Post> createPost(String text) async {
-    return await _postService.createPost(text);
+  Future<Post> createPost(String text, String url) async {
+    return await _postService.createPost(text, url);
   }
 }
