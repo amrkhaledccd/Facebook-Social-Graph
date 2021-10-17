@@ -81,12 +81,13 @@ class AuthService {
     }
   }
 
-  Future<List<User>> findUserFriends(String userId) async {
+  Future<List<User>> findUserFriends(String userId, String token) async {
     final url =
-        "http://10.0.2.2:3004/objects/$userId/adjacents?type=USER&limit=6";
+        "http://10.0.2.2:3004/objects/$userId/adjacents?type=USER&associationType=FRIEND&limit=6";
 
     try {
-      final response = await http.get(Uri.parse(url));
+      final response = await http
+          .get(Uri.parse(url), headers: {"Authorization": "Bearer $token"});
 
       if (response.statusCode >= 500) {
         throw HttpException("Something went wrong");
@@ -110,12 +111,13 @@ class AuthService {
     }
   }
 
-  Future<num> countUserFriends(String userId) async {
+  Future<num> countUserFriends(String userId, String token) async {
     final url =
         "http://10.0.2.2:3004/objects/$userId/adjacents/count?type=USER";
 
     try {
-      final response = await http.get(Uri.parse(url));
+      final response = await http
+          .get(Uri.parse(url), headers: {"Authorization": "Bearer $token"});
 
       if (response.statusCode >= 500) {
         throw HttpException("Something went wrong");
@@ -130,12 +132,14 @@ class AuthService {
     }
   }
 
-  Future<List<User>> findMutualFriends(String userId1, String userId2) async {
+  Future<List<User>> findMutualFriends(
+      String userId1, String userId2, String token) async {
     final url =
         "http://10.0.2.2:3004/objects/$userId1/mutual/$userId2?type=USER&limit=6";
 
     try {
-      final response = await http.get(Uri.parse(url));
+      final response = await http
+          .get(Uri.parse(url), headers: {"Authorization": "Bearer $token"});
 
       if (response.statusCode >= 500) {
         throw HttpException("Something went wrong");
@@ -159,12 +163,14 @@ class AuthService {
     }
   }
 
-  Future<num> countMutualFriends(String userId1, String userId2) async {
+  Future<num> countMutualFriends(
+      String userId1, String userId2, String token) async {
     final url =
         "http://10.0.2.2:3004/objects/$userId1/mutual/$userId2/count?type=USER";
 
     try {
-      final response = await http.get(Uri.parse(url));
+      final response = await http
+          .get(Uri.parse(url), headers: {"Authorization": "Bearer $token"});
 
       if (response.statusCode >= 500) {
         throw HttpException("Something went wrong");

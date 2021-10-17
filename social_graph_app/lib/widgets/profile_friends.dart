@@ -20,11 +20,13 @@ class _ProfileFriendsState extends State<ProfileFriends> {
       final _authProvider = Provider.of<AuthProvider>(context, listen: false);
 
       if (_userProvider.user!.id == _authProvider.currentUser.id) {
-        _userProvider.loadUserFriends();
-        _userProvider.countUserFriends();
+        _userProvider.loadUserFriends(_authProvider.token);
+        _userProvider.countUserFriends(_authProvider.token);
       } else {
-        _userProvider.loadMutualFriends(_authProvider.currentUser.id);
-        _userProvider.countMutualFriends(_authProvider.currentUser.id);
+        _userProvider.loadMutualFriends(
+            _authProvider.currentUser.id, _authProvider.token);
+        _userProvider.countMutualFriends(
+            _authProvider.currentUser.id, _authProvider.token);
       }
     });
 
@@ -94,11 +96,13 @@ class FriendItem extends StatelessWidget {
         final _userProvider = Provider.of<UserProvider>(context, listen: false);
         final _authProvider = Provider.of<AuthProvider>(context, listen: false);
         if (_authProvider.currentUser.id == _userProvider.user!.id) {
-          _userProvider.loadUserFriends();
-          _userProvider.countUserFriends();
+          _userProvider.loadUserFriends(_authProvider.token);
+          _userProvider.countUserFriends(_authProvider.token);
         } else {
-          _userProvider.loadMutualFriends(_authProvider.currentUser.id);
-          _userProvider.countMutualFriends(_authProvider.currentUser.id);
+          _userProvider.loadMutualFriends(
+              _authProvider.currentUser.id, _authProvider.token);
+          _userProvider.countMutualFriends(
+              _authProvider.currentUser.id, _authProvider.token);
         }
       },
       child: Card(

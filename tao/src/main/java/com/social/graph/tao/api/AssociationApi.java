@@ -28,6 +28,12 @@ public class AssociationApi {
         associationService.associationExists(id1, id2, type);
     }
 
+    @GetMapping("/{objectId}/count")
+    public long countAssociation(
+            @PathVariable UUID objectId, @RequestParam AssociationType type) {
+        return associationService.countAssociation(objectId, type);
+    }
+
     @DeleteMapping("/{id1}/{id2}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteAssociation(

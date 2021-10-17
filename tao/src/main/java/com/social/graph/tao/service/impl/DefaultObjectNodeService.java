@@ -1,6 +1,7 @@
 package com.social.graph.tao.service.impl;
 
 import com.social.graph.tao.exception.ObjectNotFoundException;
+import com.social.graph.tao.model.AssociationType;
 import com.social.graph.tao.model.ObjectNode;
 import com.social.graph.tao.model.ObjectType;
 import com.social.graph.tao.repository.ObjectNodeRepository;
@@ -32,11 +33,12 @@ public class DefaultObjectNodeService implements ObjectNodeService {
     }
 
     @Override
-    public List<ObjectNode> findAdjacentObjects(UUID objectId, Optional<Integer> limit,  ObjectType type) {
+    public List<ObjectNode> findAdjacentObjects(
+            UUID objectId, Optional<Integer> limit, ObjectType type, AssociationType associationType) {
         findObjectById(objectId);
         return limit
                 .map(value -> repository.findAdjacentObjectsWithLimit(objectId, value, type))
-                .orElse(repository.findAdjacentObjects(objectId, type));
+                .orElse(repository.findAdjacentObjects(objectId, type, associationType));
     }
 
     @Override

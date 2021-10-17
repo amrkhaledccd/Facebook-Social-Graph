@@ -2,19 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:link_previewer_aad/link_previewer_aad.dart';
 import 'package:provider/provider.dart';
+import 'package:social_graph_app/models/association_type.dart';
+import 'package:social_graph_app/models/post.dart';
+import 'package:social_graph_app/providers/auth_provider.dart';
 import 'package:social_graph_app/providers/user_provider.dart';
+import 'package:social_graph_app/services/association_service.dart';
 
 class PostWidget extends StatelessWidget {
-  final String postText;
-  final String postUrl;
-  const PostWidget({Key? key, required this.postText, required this.postUrl})
-      : super(key: key);
+  final Post post;
+  const PostWidget({Key? key, required this.post}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final _userProvider = Provider.of<UserProvider>(context, listen: false);
+    final _authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final _associationService =
+        Provider.of<AssociationService>(context, listen: false);
 
-    return Container(
+    return Card(
       color: Colors.white,
       margin: const EdgeInsets.only(bottom: 5),
       child: Column(
@@ -32,15 +37,15 @@ class PostWidget extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 5, left: 10),
             alignment: Alignment.centerLeft,
             child: Text(
-              postText,
+              post.text,
               style: const TextStyle(fontSize: 16),
             ),
           ),
-          if (postUrl.isNotEmpty)
+          if (post.url.isNotEmpty)
             Padding(
               padding: const EdgeInsets.all(5.0),
               child: LinkPreviewerAad(
-                link: postUrl,
+                link: post.url,
                 direction: ContentDirection.horizontal,
                 borderColor: Colors.black12,
                 borderRadius: 8,
@@ -85,7 +90,12 @@ class PostWidget extends StatelessWidget {
             children: [
               TextButton.icon(
                 style: TextButton.styleFrom(primary: Colors.grey[800]),
-                onPressed: () {},
+                onPressed: () async {
+                  await _associationService.createAssociation(
+                      _authProvider.currentUser.id,
+                      post.id,
+                      AssociationType.liked);
+                },
                 icon: const Icon(Icons.thumb_up_off_alt_outlined),
                 label: const Text("Like"),
               ),

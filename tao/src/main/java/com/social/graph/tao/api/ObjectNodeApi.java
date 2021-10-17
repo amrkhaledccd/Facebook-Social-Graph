@@ -1,5 +1,6 @@
 package com.social.graph.tao.api;
 
+import com.social.graph.tao.model.AssociationType;
 import com.social.graph.tao.model.ObjectNode;
 import com.social.graph.tao.model.ObjectType;
 import com.social.graph.tao.payload.CreateObjectRequest;
@@ -24,8 +25,9 @@ public class ObjectNodeApi {
     public List<ObjectNode> findAdjacentObjects(
             @PathVariable UUID objectId,
             @RequestParam ObjectType type,
+            @RequestParam AssociationType associationType,
             @RequestParam(required = false) Optional<Integer> limit) {
-        return objectNodeService.findAdjacentObjects(objectId, limit, type);
+        return objectNodeService.findAdjacentObjects(objectId, limit, type, associationType);
     }
 
     @GetMapping("/{objectId}/adjacents/count")

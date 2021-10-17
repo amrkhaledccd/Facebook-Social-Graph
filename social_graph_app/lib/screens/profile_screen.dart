@@ -73,9 +73,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   List<Widget> _buildListItems() {
     final _postProvider = Provider.of<PostProvider>(context, listen: false);
 
-    return _postProvider.posts
-        .map((post) => PostWidget(postText: post.text, postUrl: post.url))
-        .toList();
+    return _postProvider.posts.map((post) => PostWidget(post: post)).toList();
   }
 
   @override

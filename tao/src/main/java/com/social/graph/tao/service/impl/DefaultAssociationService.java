@@ -37,6 +37,11 @@ public class DefaultAssociationService implements AssociationService {
     }
 
     @Override
+    public long countAssociation(UUID startObjId, AssociationType type) {
+        return repository.countAssociation(startObjId, type);
+    }
+
+    @Override
     public void deleteAssociation(UUID objId1, UUID objId2, AssociationType type) {
         repository.deleteAssociation(objId1, objId2, type);
         repository.deleteAssociation(objId2, objId1, type.reverseAssociation());

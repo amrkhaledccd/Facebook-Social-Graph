@@ -6,7 +6,8 @@ import '../models/post.dart';
 
 class PostService {
   Future<List<Post>> findUserPosts(String userId) async {
-    final url = "http://10.0.2.2:3004/objects/$userId/adjacents?type=POST";
+    final url =
+        "http://10.0.2.2:3004/objects/$userId/adjacents?type=POST&associationType=CREATED";
 
     try {
       final response = await http.get(Uri.parse(url));

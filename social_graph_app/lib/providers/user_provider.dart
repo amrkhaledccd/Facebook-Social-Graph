@@ -32,27 +32,27 @@ class UserProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> loadUserFriends() async {
-    final response = await _authService.findUserFriends(user!.id);
+  Future<void> loadUserFriends(String token) async {
+    final response = await _authService.findUserFriends(user!.id, token);
     _friends = response;
     notifyListeners();
   }
 
-  Future<void> loadMutualFriends(String currentUserId) async {
+  Future<void> loadMutualFriends(String currentUserId, String token) async {
     final response =
-        await _authService.findMutualFriends(currentUserId, user!.id);
+        await _authService.findMutualFriends(currentUserId, user!.id, token);
     _friends = response;
     notifyListeners();
   }
 
-  Future<void> countUserFriends() async {
-    _friendsCount = await _authService.countUserFriends(user!.id);
+  Future<void> countUserFriends(String token) async {
+    _friendsCount = await _authService.countUserFriends(user!.id, token);
     notifyListeners();
   }
 
-  Future<void> countMutualFriends(String currentUserId) async {
+  Future<void> countMutualFriends(String currentUserId, String toekn) async {
     _friendsCount =
-        await _authService.countMutualFriends(currentUserId, user!.id);
+        await _authService.countMutualFriends(currentUserId, user!.id, toekn);
     notifyListeners();
   }
 }

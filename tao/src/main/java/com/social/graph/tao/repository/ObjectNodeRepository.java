@@ -10,8 +10,8 @@ import java.util.UUID;
 
 public interface ObjectNodeRepository extends Neo4jRepository<ObjectNode, UUID> {
 
-    @Query("MATCH (n:ObjectNode{id:$objectId}) -[r]-> (p:ObjectNode{type:$type}) return p")
-    List<ObjectNode> findAdjacentObjects(UUID objectId, ObjectType type);
+    @Query("MATCH (n:ObjectNode{id:$objectId}) -[r:relate_to{type: $associationType}]-> (p:ObjectNode{type:$type}) return p")
+    List<ObjectNode> findAdjacentObjects(UUID objectId, ObjectType type, AssociationType associationType);
 
     @Query("MATCH (n:ObjectNode{id:$objectId}) -[r]-> (p:ObjectNode{type:$type}) return count(p)")
     long countAdjacentObjects(UUID objectId, ObjectType type);
@@ -29,6 +29,9 @@ public interface ObjectNodeRepository extends Neo4jRepository<ObjectNode, UUID> 
 
     @Query("MATCH (n:ObjectNode{id:$startObjId}) -[r:relate_to{type:$type}]- (m:ObjectNode{id:$endObjId}) RETURN COUNT(r) > 0")
     boolean associationExists(UUID startObjId, UUID endObjId, AssociationType type);
+
+    @Query("MATCH (:ObjectNode{id:$startObjId}) -[r:relate_to{type:$type}]- (:ObjectNode) RETURN COUNT(r)")
+    long countAssociation(UUID startObjId, AssociationType type);
 
     @Query("MATCH (:ObjectNode{id: $objId1}) -[r:relate_to{type: $type}]- (:ObjectNode{id: $objId2}) delete r")
     void deleteAssociation(UUID objId1, UUID objId2, AssociationType type);
