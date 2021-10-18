@@ -27,6 +27,11 @@ public interface ObjectNodeRepository extends Neo4jRepository<ObjectNode, UUID> 
             "(:ObjectNode{id: $objId2}) return count(m)")
     long countMutualObjectsWith(UUID objId1, UUID objId2, ObjectType type);
 
+    @Query("OPTIONAL MATCH (n:ObjectNode), (m:ObjectNode) \n" +
+            "WHERE n.id= $startObjId AND m.id= $endObjId\n" +
+            "CREATE (n) - [r:relate_to{type: $type}] -> (m) - [re:relate_to{type: $reverseType}] -> (n)\n")
+    void createAssociation(UUID startObjId, UUID endObjId, AssociationType type, AssociationType reverseType);
+
     @Query("MATCH (n:ObjectNode{id:$startObjId}) -[r:relate_to{type:$type}]- (m:ObjectNode{id:$endObjId}) RETURN COUNT(r) > 0")
     boolean associationExists(UUID startObjId, UUID endObjId, AssociationType type);
 

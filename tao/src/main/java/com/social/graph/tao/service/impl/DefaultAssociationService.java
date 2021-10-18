@@ -2,7 +2,6 @@ package com.social.graph.tao.service.impl;
 
 import com.social.graph.tao.exception.AssociationNotFoundException;
 import com.social.graph.tao.exception.ObjectNotFoundException;
-import com.social.graph.tao.model.Association;
 import com.social.graph.tao.model.AssociationType;
 import com.social.graph.tao.model.ObjectNode;
 import com.social.graph.tao.repository.ObjectNodeRepository;
@@ -18,14 +17,13 @@ public class DefaultAssociationService implements AssociationService {
 
     @Override
     public void createAssociation(UUID startObjId, UUID endObjId, AssociationType associationType) {
-        var startObj = findObjectById(startObjId);
-        var endObj = findObjectById(endObjId);
+        if(!repository.existsById(startObjId) || !repository.existsById(endObjId)) {
+            throw new ObjectNotFoundException(format("Object [%s] or [%s] not found", startObjId, endObjId));
+        }
 
         var exists = repository.associationExists(startObjId, endObjId, associationType);
         if(!exists) {
-            startObj.getEdges().add(new Association(associationType, endObj));
-            endObj.getEdges().add(new Association(associationType.reverseAssociation(), startObj));
-            repository.save(startObj);
+           repository.createAssociation(startObjId, endObjId, associationType, associationType.reverseAssociation());
         }
     }
 

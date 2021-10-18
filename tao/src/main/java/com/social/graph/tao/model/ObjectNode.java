@@ -1,6 +1,7 @@
 package com.social.graph.tao.model;
 
 import lombok.*;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.neo4j.core.schema.*;
@@ -20,6 +21,7 @@ public class ObjectNode {
     private ObjectType type;
 
     @Relationship(type = "relate_to")
+    @Lazy
     private List<Association> edges = new ArrayList<>();
 
     @CompositeProperty

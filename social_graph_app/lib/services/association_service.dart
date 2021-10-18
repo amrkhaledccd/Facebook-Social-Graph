@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:social_graph_app/exceptions/http_exception.dart';
 import 'package:social_graph_app/models/association_type.dart';
 import 'package:http/http.dart' as http;
 
@@ -35,6 +36,25 @@ class AssociationService with ChangeNotifier {
       }
 
       return false;
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  Future<num> countAssociation(String objectId, AssociationType type) async {
+    final _url =
+        "http://10.0.2.2:3004/associations/$objectId/count?type=${describeEnum(type).toUpperCase()}";
+
+    try {
+      final response = await http.get(Uri.parse(_url), headers: {});
+
+      if (response.statusCode >= 500) {
+        throw HttpException("Something went wrong");
+      } else if (response.statusCode >= 400) {
+        throw HttpException("Unauthorized");
+      }
+
+      return json.decode(response.body);
     } catch (error) {
       rethrow;
     }

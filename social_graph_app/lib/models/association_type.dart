@@ -1,9 +1,11 @@
 enum AssociationType {
   friend,
   created,
-  createdBy,
+  created_by,
   liked,
-  likedBy,
+  liked_by,
   joined,
-  memberOf
+  member_of,
+  has,
+  owned_by,
 }

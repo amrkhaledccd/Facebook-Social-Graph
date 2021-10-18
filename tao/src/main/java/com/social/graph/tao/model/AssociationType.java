@@ -1,7 +1,7 @@
 package com.social.graph.tao.model;
 
 public enum AssociationType {
-    FRIEND, CREATED, CREATED_BY, LIKED, LIKED_BY, JOINED, MEMBER_OF;
+    FRIEND, CREATED, CREATED_BY, LIKED, LIKED_BY, JOINED, MEMBER_OF, HAS, OWNED_BY;
 
     public AssociationType reverseAssociation() {
         return switch (this) {
@@ -11,6 +11,8 @@ public enum AssociationType {
             case LIKED_BY -> LIKED;
             case JOINED -> MEMBER_OF;
             case MEMBER_OF -> JOINED;
+            case HAS -> OWNED_BY;
+            case OWNED_BY -> HAS;
             default -> FRIEND;
         };
     }

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:social_graph_app/models/user.dart';
 
 import '../models/post.dart';
 
@@ -55,6 +56,32 @@ class PostService {
         createObjBody["data"]["text"],
         createObjBody["data"]["url"] ?? "",
       );
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  Future<List<User>> findPostLikers(String postId) async {
+    final url =
+        "http://10.0.2.2:3004/objects/$postId/adjacents?type=USER&associationType=LIKED_BY";
+
+    try {
+      final response = await http.get(Uri.parse(url));
+      List<User> users = [];
+      if (response.statusCode < 400) {
+        final fetchedUsers = json.decode(response.body);
+
+        fetchedUsers.forEach((user) => {
+              users.add(User(
+                user['id'],
+                user['data']['username'],
+                user['data']['email'],
+                user['data']['name'],
+                user['data']['imageUrl'],
+              ))
+            });
+      }
+      return users;
     } catch (error) {
       rethrow;
     }
