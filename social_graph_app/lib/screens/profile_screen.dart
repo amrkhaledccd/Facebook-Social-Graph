@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_graph_app/providers/auth_provider.dart';
+import 'package:social_graph_app/providers/comment_provider.dart';
 import 'package:social_graph_app/providers/post_provider.dart';
 import 'package:social_graph_app/providers/user_provider.dart';
 import 'package:social_graph_app/widgets/profile_card.dart';
@@ -73,7 +74,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   List<Widget> _buildListItems() {
     final _postProvider = Provider.of<PostProvider>(context, listen: false);
 
-    return _postProvider.posts.map((post) => PostWidget(post: post)).toList();
+    return _postProvider.posts
+        .map(
+          (post) => ChangeNotifierProvider(
+            create: (_) => CommentProvider(),
+            child: PostWidget(post: post),
+          ),
+        )
+        .toList();
   }
 
   @override

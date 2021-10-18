@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:social_graph_app/models/association_type.dart';
 import 'package:social_graph_app/models/post.dart';
 import 'package:social_graph_app/providers/auth_provider.dart';
+import 'package:social_graph_app/providers/comment_provider.dart';
 import 'package:social_graph_app/providers/user_provider.dart';
 import 'package:social_graph_app/services/association_service.dart';
 import 'package:social_graph_app/widgets/likers_dialog.dart';
@@ -87,7 +88,7 @@ class _PostWidgetState extends State<PostWidget> {
 
     return Card(
       color: Colors.white,
-      margin: const EdgeInsets.only(bottom: 5),
+      margin: const EdgeInsets.only(bottom: 10),
       child: Column(
         children: [
           ListTile(
@@ -161,9 +162,7 @@ class _PostWidgetState extends State<PostWidget> {
           ),
           const Padding(
             padding: EdgeInsets.only(left: 10, right: 10),
-            child: Divider(
-              thickness: 1,
-            ),
+            child: Divider(thickness: 1),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -214,8 +213,97 @@ class _PostWidgetState extends State<PostWidget> {
               ),
             ],
           ),
+          const Padding(
+            padding: EdgeInsets.only(left: 10, right: 10),
+            child: Divider(thickness: 1),
+          ),
+          const Padding(
+            padding: EdgeInsets.only(
+              left: 10,
+              right: 10,
+              bottom: 5,
+            ),
+            child: CommentTextField(),
+          )
         ],
       ),
+    );
+  }
+}
+
+class CommentTextField extends StatefulWidget {
+  const CommentTextField({Key? key}) : super(key: key);
+
+  @override
+  State<CommentTextField> createState() => _CommentTextFieldState();
+}
+
+class _CommentTextFieldState extends State<CommentTextField> {
+  final _textContrller = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    final _authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final _commentProvider =
+        Provider.of<CommentProvider>(context, listen: false);
+
+    return Row(
+      children: [
+        CircleAvatar(
+          radius: 18,
+          backgroundImage: NetworkImage(_authProvider.currentUser.imageUrl),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: TextField(
+            controller: _textContrller,
+            onChanged: (value) => setState(() {}),
+            maxLines: null,
+            keyboardType: TextInputType.multiline,
+            cursorColor: Colors.grey,
+            decoration: InputDecoration(
+              hintText: "Write a comment...",
+              fillColor: Colors.blueGrey[50],
+              filled: true,
+              focusColor: Colors.grey[550],
+              border: InputBorder.none,
+              contentPadding:
+                  const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+              focusedBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.white),
+                borderRadius: BorderRadius.circular(25.7),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.white),
+                borderRadius: BorderRadius.circular(25.7),
+              ),
+              suffixIcon: IconButton(
+                  onPressed: () {},
+                  splashColor: Colors.transparent,
+                  splashRadius: 20,
+                  icon: Icon(
+                    Icons.image_outlined,
+                    color: Colors.grey[550],
+                  )),
+            ),
+          ),
+        ),
+        if (_textContrller.value.text.isNotEmpty)
+          IconButton(
+            onPressed: () {
+              print(_textContrller.value.text);
+              if (_textContrller.value.text.isNotEmpty) {
+                _commentProvider.createComment(_textContrller.value.text);
+              }
+            },
+            splashRadius: 22,
+            icon: Icon(
+              Icons.send,
+              color: Theme.of(context).primaryColor,
+              size: 30,
+            ),
+          )
+      ],
     );
   }
 }

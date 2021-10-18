@@ -37,6 +37,7 @@ class _NewPostState extends State<NewPost> {
       setState(() {
         _detectedUrl = value.substring(match.start, match.end);
       });
+      // ignore: empty_catches
     } catch (error) {}
   }
 
