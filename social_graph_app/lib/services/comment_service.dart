@@ -1,12 +1,36 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:social_graph_app/exceptions/http_exception.dart';
+import 'package:social_graph_app/models/user.dart';
 import '../models/comment.dart';
 
 class CommentService {
+  Future<List<Comment>> loadComments(String id) async {
+    final url =
+        "http://10.0.2.2:3004/objects/$id/adjacents?type=COMMENT&associationType=HAS";
+
+    try {
+      final response = await http.get(Uri.parse(url));
+      List<Comment> comments = [];
+      if (response.statusCode < 400) {
+        final fetchedComments = json.decode(response.body);
+
+        fetchedComments.forEach((post) => {
+              comments.add(Comment(
+                post["id"],
+                post["data"]["text"],
+              ))
+            });
+      }
+      return comments;
+    } catch (error) {
+      rethrow;
+    }
+  }
+
   Future<Comment> createComment(String text) async {
     const url = "http://10.0.2.2:3004/objects";
 
-    print(url);
     Map<String, String> data = {'text': text};
 
     try {
@@ -24,6 +48,29 @@ class CommentService {
       return Comment(
         createObjBody["id"],
         createObjBody["data"]["text"],
+      );
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  Future<User> findCreator(String commentId) async {
+    final url =
+        "http://10.0.2.2:3004/objects/$commentId/adjacents?type=USER&associationType=CREATED_BY";
+
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode >= 400) {
+        throw HttpException("Unable to fetch the comment creator");
+      }
+
+      final fetchedUsers = json.decode(response.body);
+      return User(
+        fetchedUsers[0]['id'],
+        fetchedUsers[0]['data']['username'],
+        fetchedUsers[0]['data']['email'],
+        fetchedUsers[0]['data']['name'],
+        fetchedUsers[0]['data']['imageUrl'],
       );
     } catch (error) {
       rethrow;

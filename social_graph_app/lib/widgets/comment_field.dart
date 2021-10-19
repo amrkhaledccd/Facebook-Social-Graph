@@ -88,6 +88,7 @@ class _CommentFieldState extends State<CommentField> {
                         AssociationType.has,
                       );
                       _commentProvider.countComments(widget.postId);
+                      _commentProvider.loadPostComments(widget.postId);
                       setState(() {
                         _textContrller.clear();
                         _commenting = false;

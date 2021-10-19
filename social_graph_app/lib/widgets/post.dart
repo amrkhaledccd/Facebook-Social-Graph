@@ -6,9 +6,11 @@ import 'package:social_graph_app/models/association_type.dart';
 import 'package:social_graph_app/models/post.dart';
 import 'package:social_graph_app/providers/auth_provider.dart';
 import 'package:social_graph_app/providers/comment_provider.dart';
+import 'package:social_graph_app/providers/post_like_provider.dart';
 import 'package:social_graph_app/providers/user_provider.dart';
 import 'package:social_graph_app/services/association_service.dart';
 import 'package:social_graph_app/widgets/comment_field.dart';
+import 'package:social_graph_app/widgets/comment_list.dart';
 import 'package:social_graph_app/widgets/likers_dialog.dart';
 
 class PostWidget extends StatefulWidget {
@@ -20,57 +22,24 @@ class PostWidget extends StatefulWidget {
 }
 
 class _PostWidgetState extends State<PostWidget> {
-  var likesText = "";
-  var likedByCurrentUser = false;
-
   @override
   void initState() {
     Future.delayed(Duration.zero, () {
-      setLikesText();
+      final userId =
+          Provider.of<AuthProvider>(context, listen: false).currentUser.id;
+
+      Provider.of<PostLikeProvider>(context, listen: false)
+          .loadLikesStats(widget.post.id, userId);
+
       Provider.of<CommentProvider>(context, listen: false)
           .countComments(widget.post.id);
     });
     super.initState();
   }
 
-  void setLikesText() async {
-    final _associationService =
-        Provider.of<AssociationService>(context, listen: false);
-    final _authProvider = Provider.of<AuthProvider>(context, listen: false);
-
-    var likes = await _associationService.countAssociation(
-        widget.post.id, AssociationType.liked_by);
-
-    final isLikedByCurrentUser = await _associationService.associationExists(
-      _authProvider.currentUser.id,
-      widget.post.id,
-      AssociationType.liked_by,
-    );
-
-    if (likes == 0) {
-      return;
-    }
-    var text = "$likes";
-
-    if (isLikedByCurrentUser) {
-      if (likes == 1) {
-        text = "You";
-      } else if (likes == 2) {
-        text = "You and ${likes - 1} more";
-      } else {
-        text = "You and ${likes - 1} others";
-      }
-    }
-
-    setState(() {
-      likesText = text;
-      likedByCurrentUser = isLikedByCurrentUser;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    final _commentProvider = Provider.of<CommentProvider>(context);
+    //final _commentProvider = Provider.of<CommentProvider>(context);
     final _userProvider = Provider.of<UserProvider>(context, listen: false);
     final _authProvider = Provider.of<AuthProvider>(context, listen: false);
     final _associationService =
@@ -114,39 +83,48 @@ class _PostWidgetState extends State<PostWidget> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                if (likesText.isNotEmpty)
-                  TextButton.icon(
-                    onPressed: () async {
-                      await showDialog(
-                        context: context,
-                        builder: (_) => LikersDialog(postId: widget.post.id),
-                      );
-                    },
-                    icon: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                          gradient: RadialGradient(colors: [
-                            Colors.blue,
-                            Theme.of(context).primaryColor,
-                          ]),
-                          color: Theme.of(context).primaryColor,
-                          shape: BoxShape.circle),
-                      child: const Icon(
-                        Icons.thumb_up,
-                        color: Colors.white,
-                        size: 14,
-                      ),
-                    ),
-                    label: Text(
-                      likesText,
-                      style: const TextStyle(color: Colors.black54),
-                    ),
-                  ),
-                if (_commentProvider.numOfComments > 0)
-                  Text(
-                    '${_commentProvider.numOfComments} ${_commentProvider.numOfComments == 1 ? "Comment" : "Comments"}',
-                    style: const TextStyle(color: Colors.black54),
-                  ),
+                Consumer<PostLikeProvider>(
+                  builder: (_, likeProvider, _ch) {
+                    return likeProvider.likesText.isEmpty
+                        ? const SizedBox()
+                        : TextButton.icon(
+                            onPressed: () async {
+                              await showDialog(
+                                context: context,
+                                builder: (_) =>
+                                    LikersDialog(postId: widget.post.id),
+                              );
+                            },
+                            icon: Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                  gradient: RadialGradient(colors: [
+                                    Colors.blue,
+                                    Theme.of(context).primaryColor,
+                                  ]),
+                                  color: Theme.of(context).primaryColor,
+                                  shape: BoxShape.circle),
+                              child: const Icon(
+                                Icons.thumb_up,
+                                color: Colors.white,
+                                size: 14,
+                              ),
+                            ),
+                            label: Text(
+                              likeProvider.likesText,
+                              style: const TextStyle(color: Colors.black54),
+                            ),
+                          );
+                  },
+                ),
+                Consumer<CommentProvider>(builder: (_, commentProvider, _ch) {
+                  return commentProvider.numOfComments == 0
+                      ? const SizedBox()
+                      : Text(
+                          '${commentProvider.numOfComments} ${commentProvider.numOfComments == 1 ? "Comment" : "Comments"}',
+                          style: const TextStyle(color: Colors.black54),
+                        );
+                }),
               ],
             ),
           ),
@@ -157,38 +135,41 @@ class _PostWidgetState extends State<PostWidget> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              TextButton.icon(
-                style: TextButton.styleFrom(primary: Colors.grey[800]),
-                onPressed: () async {
-                  if (likedByCurrentUser) {
-                    await _associationService.deleteAssociation(
-                        _authProvider.currentUser.id,
-                        widget.post.id,
-                        AssociationType.liked);
-                  } else {
-                    await _associationService.createAssociation(
-                        _authProvider.currentUser.id,
-                        widget.post.id,
-                        AssociationType.liked);
-                  }
-                  setLikesText();
-                },
-                icon: likedByCurrentUser
-                    ? Icon(
-                        Icons.thumb_up,
-                        color: Theme.of(context).primaryColor,
-                      )
-                    : const Icon(
-                        Icons.thumb_up_off_alt,
-                        color: Colors.black,
-                      ),
-                label: Text("Like",
-                    style: TextStyle(
-                      color: likedByCurrentUser
-                          ? Theme.of(context).primaryColor
-                          : Colors.black,
-                    )),
-              ),
+              Consumer<PostLikeProvider>(builder: (_, likeProvider, _ch) {
+                return TextButton.icon(
+                  style: TextButton.styleFrom(primary: Colors.grey[800]),
+                  onPressed: () async {
+                    if (likeProvider.isLikedByCurrentUser) {
+                      await _associationService.deleteAssociation(
+                          _authProvider.currentUser.id,
+                          widget.post.id,
+                          AssociationType.liked);
+                    } else {
+                      await _associationService.createAssociation(
+                          _authProvider.currentUser.id,
+                          widget.post.id,
+                          AssociationType.liked);
+                    }
+                    likeProvider.loadLikesStats(
+                        widget.post.id, _authProvider.currentUser.id);
+                  },
+                  icon: likeProvider.isLikedByCurrentUser
+                      ? Icon(
+                          Icons.thumb_up,
+                          color: Theme.of(context).primaryColor,
+                        )
+                      : const Icon(
+                          Icons.thumb_up_off_alt,
+                          color: Colors.black,
+                        ),
+                  label: Text("Like",
+                      style: TextStyle(
+                        color: likeProvider.isLikedByCurrentUser
+                            ? Theme.of(context).primaryColor
+                            : Colors.black,
+                      )),
+                );
+              }),
               TextButton.icon(
                 style: TextButton.styleFrom(primary: Colors.grey[800]),
                 onPressed: () {},
@@ -207,6 +188,11 @@ class _PostWidgetState extends State<PostWidget> {
             padding: EdgeInsets.only(left: 10, right: 10),
             child: Divider(thickness: 1),
           ),
+          Consumer<CommentProvider>(builder: (_, commentProvider, _ch) {
+            return commentProvider.numOfComments == 0
+                ? const SizedBox()
+                : CommentList(postId: widget.post.id);
+          }),
           Padding(
             padding: const EdgeInsets.only(
               left: 10,

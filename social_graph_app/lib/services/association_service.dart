@@ -67,7 +67,7 @@ class AssociationService with ChangeNotifier {
 
     try {
       await http.delete(Uri.parse(_url), headers: {});
-      notifyListeners();
+      //notifyListeners();
     } catch (error) {
       rethrow;
     }
