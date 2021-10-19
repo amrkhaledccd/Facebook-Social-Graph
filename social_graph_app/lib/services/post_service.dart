@@ -21,6 +21,7 @@ class PostService {
                 post["id"],
                 post["data"]["text"],
                 post["data"]["url"] ?? "",
+                DateTime.parse(post["createdAt"]),
               ))
             });
       }
@@ -55,6 +56,7 @@ class PostService {
         createObjBody["id"],
         createObjBody["data"]["text"],
         createObjBody["data"]["url"] ?? "",
+        DateTime.parse(createObjBody["updatedAt"]),
       );
     } catch (error) {
       rethrow;

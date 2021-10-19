@@ -33,6 +33,7 @@ dependencies:
   intl: ^0.17.0
   http: ^0.13.3
   link_previewer_aad: ^1.0.0
+  timeago: ^3.1.0
 
 
   # The following adds the Cupertino Icons font to your application.

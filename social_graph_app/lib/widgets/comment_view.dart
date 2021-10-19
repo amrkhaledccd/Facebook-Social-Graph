@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:social_graph_app/models/comment.dart';
 import 'package:social_graph_app/models/user.dart';
 import 'package:social_graph_app/providers/comment_provider.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class CommentView extends StatelessWidget {
   final Comment comment;
@@ -63,7 +64,7 @@ class CommentView extends StatelessWidget {
                 child: Row(
                   children: [
                     Text(
-                      'Like - Reply - 2w',
+                      'Like - Reply - ${timeago.format(comment.date, locale: "en_short")}',
                       style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,

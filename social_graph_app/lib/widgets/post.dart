@@ -12,6 +12,7 @@ import 'package:social_graph_app/services/association_service.dart';
 import 'package:social_graph_app/widgets/comment_field.dart';
 import 'package:social_graph_app/widgets/comment_list.dart';
 import 'package:social_graph_app/widgets/likers_dialog.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class PostWidget extends StatefulWidget {
   final Post post;
@@ -39,7 +40,6 @@ class _PostWidgetState extends State<PostWidget> {
 
   @override
   Widget build(BuildContext context) {
-    //final _commentProvider = Provider.of<CommentProvider>(context);
     final _userProvider = Provider.of<UserProvider>(context, listen: false);
     final _authProvider = Provider.of<AuthProvider>(context, listen: false);
     final _associationService =
@@ -56,7 +56,10 @@ class _PostWidgetState extends State<PostWidget> {
               backgroundImage: NetworkImage(_userProvider.user!.imageUrl),
             ),
             title: Text(_userProvider.user!.name),
-            subtitle: Text(DateFormat.yMMMd().format(DateTime.now())),
+            subtitle: Text(
+                widget.post.date.difference(DateTime.now()).inDays < 0
+                    ? DateFormat.yMMMd().format(widget.post.date)
+                    : timeago.format(widget.post.date)),
             trailing: const Icon(Icons.more_horiz),
           ),
           Container(

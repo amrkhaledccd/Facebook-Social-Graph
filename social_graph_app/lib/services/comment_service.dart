@@ -13,12 +13,16 @@ class CommentService {
       final response = await http.get(Uri.parse(url));
       List<Comment> comments = [];
       if (response.statusCode < 400) {
-        final fetchedComments = json.decode(response.body);
+        final fetchedComments = json.decode(response.body) as List;
 
-        fetchedComments.forEach((post) => {
+        fetchedComments
+            .sort((a, b) => a["createdAt"].compareTo(b["createdAt"]));
+
+        fetchedComments.forEach((comment) => {
               comments.add(Comment(
-                post["id"],
-                post["data"]["text"],
+                comment["id"],
+                comment["data"]["text"],
+                DateTime.parse(comment["createdAt"]),
               ))
             });
       }
@@ -48,6 +52,7 @@ class CommentService {
       return Comment(
         createObjBody["id"],
         createObjBody["data"]["text"],
+        DateTime.parse(createObjBody["createdAt"]),
       );
     } catch (error) {
       rethrow;
