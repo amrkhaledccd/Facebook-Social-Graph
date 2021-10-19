@@ -8,6 +8,7 @@ import 'package:social_graph_app/providers/auth_provider.dart';
 import 'package:social_graph_app/providers/comment_provider.dart';
 import 'package:social_graph_app/providers/user_provider.dart';
 import 'package:social_graph_app/services/association_service.dart';
+import 'package:social_graph_app/widgets/comment_field.dart';
 import 'package:social_graph_app/widgets/likers_dialog.dart';
 
 class PostWidget extends StatefulWidget {
@@ -21,13 +22,13 @@ class PostWidget extends StatefulWidget {
 class _PostWidgetState extends State<PostWidget> {
   var likesText = "";
   var likedByCurrentUser = false;
-  num numOfComments = 0;
 
   @override
   void initState() {
     Future.delayed(Duration.zero, () {
       setLikesText();
-      setNumOfComments();
+      Provider.of<CommentProvider>(context, listen: false)
+          .countComments(widget.post.id);
     });
     super.initState();
   }
@@ -67,20 +68,9 @@ class _PostWidgetState extends State<PostWidget> {
     });
   }
 
-  void setNumOfComments() async {
-    final _associationService =
-        Provider.of<AssociationService>(context, listen: false);
-
-    var comments = await _associationService.countAssociation(
-        widget.post.id, AssociationType.has);
-
-    setState(() {
-      numOfComments = comments;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    final _commentProvider = Provider.of<CommentProvider>(context);
     final _userProvider = Provider.of<UserProvider>(context, listen: false);
     final _authProvider = Provider.of<AuthProvider>(context, listen: false);
     final _associationService =
@@ -152,9 +142,9 @@ class _PostWidgetState extends State<PostWidget> {
                       style: const TextStyle(color: Colors.black54),
                     ),
                   ),
-                if (numOfComments > 0)
+                if (_commentProvider.numOfComments > 0)
                   Text(
-                    '$numOfComments ${numOfComments == 1 ? "Comment" : "Comments"}',
+                    '${_commentProvider.numOfComments} ${_commentProvider.numOfComments == 1 ? "Comment" : "Comments"}',
                     style: const TextStyle(color: Colors.black54),
                   ),
               ],
@@ -217,93 +207,16 @@ class _PostWidgetState extends State<PostWidget> {
             padding: EdgeInsets.only(left: 10, right: 10),
             child: Divider(thickness: 1),
           ),
-          const Padding(
-            padding: EdgeInsets.only(
+          Padding(
+            padding: const EdgeInsets.only(
               left: 10,
               right: 10,
               bottom: 5,
             ),
-            child: CommentTextField(),
+            child: CommentField(postId: widget.post.id),
           )
         ],
       ),
-    );
-  }
-}
-
-class CommentTextField extends StatefulWidget {
-  const CommentTextField({Key? key}) : super(key: key);
-
-  @override
-  State<CommentTextField> createState() => _CommentTextFieldState();
-}
-
-class _CommentTextFieldState extends State<CommentTextField> {
-  final _textContrller = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    final _authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final _commentProvider =
-        Provider.of<CommentProvider>(context, listen: false);
-
-    return Row(
-      children: [
-        CircleAvatar(
-          radius: 18,
-          backgroundImage: NetworkImage(_authProvider.currentUser.imageUrl),
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: TextField(
-            controller: _textContrller,
-            onChanged: (value) => setState(() {}),
-            maxLines: null,
-            keyboardType: TextInputType.multiline,
-            cursorColor: Colors.grey,
-            decoration: InputDecoration(
-              hintText: "Write a comment...",
-              fillColor: Colors.blueGrey[50],
-              filled: true,
-              focusColor: Colors.grey[550],
-              border: InputBorder.none,
-              contentPadding:
-                  const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
-              focusedBorder: OutlineInputBorder(
-                borderSide: const BorderSide(color: Colors.white),
-                borderRadius: BorderRadius.circular(25.7),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderSide: const BorderSide(color: Colors.white),
-                borderRadius: BorderRadius.circular(25.7),
-              ),
-              suffixIcon: IconButton(
-                  onPressed: () {},
-                  splashColor: Colors.transparent,
-                  splashRadius: 20,
-                  icon: Icon(
-                    Icons.image_outlined,
-                    color: Colors.grey[550],
-                  )),
-            ),
-          ),
-        ),
-        if (_textContrller.value.text.isNotEmpty)
-          IconButton(
-            onPressed: () {
-              print(_textContrller.value.text);
-              if (_textContrller.value.text.isNotEmpty) {
-                _commentProvider.createComment(_textContrller.value.text);
-              }
-            },
-            splashRadius: 22,
-            icon: Icon(
-              Icons.send,
-              color: Theme.of(context).primaryColor,
-              size: 30,
-            ),
-          )
-      ],
     );
   }
 }
