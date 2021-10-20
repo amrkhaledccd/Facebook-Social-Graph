@@ -14,7 +14,9 @@ class PostService {
       final response = await http.get(Uri.parse(url));
       List<Post> posts = [];
       if (response.statusCode < 400) {
-        final fetchedPosts = json.decode(response.body);
+        final fetchedPosts = json.decode(response.body) as List;
+
+        fetchedPosts.sort((a, b) => b["createdAt"].compareTo(a["createdAt"]));
 
         fetchedPosts.forEach((post) => {
               posts.add(Post(
