@@ -26,9 +26,16 @@ class HomeScreen extends StatelessWidget {
             future: _postProvider.findUserFeed(_authProvider.currentUser.id),
             builder: (_, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const CircularProgressIndicator();
+                return const Center(child: CircularProgressIndicator());
               }
               final posts = snapshot.data as List<Post>;
+
+              if (posts.isEmpty) {
+                return const Center(
+                  child: Text("No posts found"),
+                );
+              }
+
               return ListView.builder(
                 itemCount: posts.length,
                 itemBuilder: (_, i) => FutureBuilder(
