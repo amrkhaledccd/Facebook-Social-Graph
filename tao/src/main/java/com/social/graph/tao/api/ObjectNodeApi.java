@@ -30,6 +30,11 @@ public class ObjectNodeApi {
         return objectNodeService.findAdjacentObjects(objectId, limit, type, associationType);
     }
 
+    @GetMapping()
+    public List<ObjectNode> findObjectsByType(@RequestParam ObjectType type) {
+        return objectNodeService.findObjectsByType(type);
+    }
+
     @GetMapping("/{objectId}/adjacents/count")
     public long countAdjacentObjects(
             @PathVariable UUID objectId,
@@ -58,6 +63,11 @@ public class ObjectNodeApi {
     @ResponseStatus(HttpStatus.CREATED)
     public ObjectNode createObject(@RequestBody CreateObjectRequest request) {
         return objectNodeService.createObject(request.getType(), request.getData());
+    }
+
+    @GetMapping("/feed/{userId}")
+    public List<ObjectNode> findUserFeed(@PathVariable UUID userId) {
+        return objectNodeService.findUserFeed(userId);
     }
 
 }

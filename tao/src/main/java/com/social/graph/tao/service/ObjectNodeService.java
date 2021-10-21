@@ -12,6 +12,7 @@ import java.util.UUID;
 public interface ObjectNodeService {
     ObjectNode createObject(ObjectType type, Map<String, String> data);
     ObjectNode findObjectById(UUID objectId);
+    List<ObjectNode> findObjectsByType(ObjectType type);
     List<ObjectNode> findAdjacentObjects(
             UUID objectId, Optional<Integer> limit, ObjectType type, AssociationType associationType);
     long countAdjacentObjects(UUID objectId, ObjectType type);
@@ -19,4 +20,7 @@ public interface ObjectNodeService {
     long countMutualObjects(UUID objId1, UUID objId2, ObjectType type);
     void updateObject(UUID objectId);
     void deleteObject(UUID objectId);
+
+    // This is a dummy function to generate user feed just for the sake of demo.
+    List<ObjectNode> findUserFeed(UUID userId);
 }

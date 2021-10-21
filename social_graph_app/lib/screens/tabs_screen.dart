@@ -20,7 +20,14 @@ class _TabsScreenState extends State<TabsScreen> {
   int _selectedIndex = 0;
 
   List<Widget> screens = [
-    const HomeScreen(),
+    MultiProvider(providers: [
+      ChangeNotifierProvider<PostProvider>(
+        create: (ctx) => PostProvider(),
+      ),
+      ChangeNotifierProvider(
+        create: (ctx) => PostProvider(),
+      )
+    ], child: const HomeScreen()),
     const GroupsScreen(),
     MultiProvider(
       providers: [
@@ -33,7 +40,8 @@ class _TabsScreenState extends State<TabsScreen> {
       ],
       child: const ProfileScreen(),
     ),
-    const FindPeopleScreen(),
+    ChangeNotifierProvider(
+        create: (_) => UserProvider(), child: const FindPeopleScreen()),
   ];
 
   @override

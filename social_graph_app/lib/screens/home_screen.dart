@@ -1,20 +1,65 @@
 import 'package:flutter/material.dart';
-import 'package:social_graph_app/screens/profile_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:social_graph_app/models/post.dart';
+import 'package:social_graph_app/models/user.dart';
+import 'package:social_graph_app/providers/auth_provider.dart';
+import 'package:social_graph_app/providers/comment_provider.dart';
+import 'package:social_graph_app/providers/post_like_provider.dart';
+import 'package:social_graph_app/providers/post_provider.dart';
+import 'package:social_graph_app/providers/user_provider.dart';
+import 'package:social_graph_app/widgets/post.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final _postProvider = Provider.of<PostProvider>(context, listen: false);
+    final _authProvider = Provider.of<AuthProvider>(context, listen: false);
+
     return Scaffold(
-      body: Center(
-        child: TextButton(
-            onPressed: () {
-              Navigator.of(context)
-                  .pushNamed(ProfileScreen.routeName, arguments: "islam");
+        backgroundColor: Colors.blueGrey[50],
+        appBar: AppBar(title: const Text('Social graph')),
+        body: Padding(
+          padding: const EdgeInsets.all(10),
+          child: FutureBuilder(
+            future: _postProvider.findUserFeed(_authProvider.currentUser.id),
+            builder: (_, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              }
+              final posts = snapshot.data as List<Post>;
+              return ListView.builder(
+                itemCount: posts.length,
+                itemBuilder: (_, i) => FutureBuilder(
+                  future: _postProvider.findCreator(posts[i].id),
+                  builder: (_, creatorSnapshot) {
+                    if (creatorSnapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      return const SizedBox();
+                    }
+                    final creator = creatorSnapshot.data as User;
+                    final _userProvider = UserProvider();
+                    _userProvider.loadUser("", "", creator);
+                    return MultiProvider(
+                      providers: [
+                        ChangeNotifierProvider(
+                          create: (_) => CommentProvider(),
+                        ),
+                        ChangeNotifierProvider(
+                          create: (_) => PostLikeProvider(),
+                        ),
+                        ChangeNotifierProvider(
+                          create: (_) => _userProvider,
+                        )
+                      ],
+                      child: PostWidget(post: posts[i]),
+                    );
+                  },
+                ),
+              );
             },
-            child: const Text("Go to profile screen")),
-      ),
-    );
+          ),
+        ));
   }
 }

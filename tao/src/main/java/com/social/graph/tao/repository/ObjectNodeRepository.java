@@ -13,6 +13,9 @@ public interface ObjectNodeRepository extends Neo4jRepository<ObjectNode, UUID> 
     @Query("MATCH (n:ObjectNode{id:$objectId}) -[r:relate_to{type: $associationType}]-> (p:ObjectNode{type:$type}) return p")
     List<ObjectNode> findAdjacentObjects(UUID objectId, ObjectType type, AssociationType associationType);
 
+    @Query("MATCH (n:ObjectNode{type:$type}) return n;")
+    List<ObjectNode> findByType(ObjectType type);
+
     @Query("MATCH (n:ObjectNode{id:$objectId}) -[r]-> (p:ObjectNode{type:$type}) return count(p)")
     long countAdjacentObjects(UUID objectId, ObjectType type);
 
@@ -40,4 +43,9 @@ public interface ObjectNodeRepository extends Neo4jRepository<ObjectNode, UUID> 
 
     @Query("MATCH (:ObjectNode{id: $objId1}) -[r:relate_to{type: $type}]- (:ObjectNode{id: $objId2}) delete r")
     void deleteAssociation(UUID objId1, UUID objId2, AssociationType type);
+
+    // This is a dummy function to generate user feed just for the sake of demo.
+    @Query("MATCH (n:ObjectNode{id: $userId}) - [:relate_to{type: 'FRIEND'}] " +
+            "-> (u:ObjectNode{type: 'USER'}) -[:relate_to{type: 'CREATED'}]-> (p:ObjectNode{type: 'POST'}) return p")
+    List<ObjectNode> findUserFeed(UUID userId);
 }

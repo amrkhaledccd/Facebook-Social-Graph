@@ -127,7 +127,6 @@ class AuthService {
 
       return json.decode(response.body) as num;
     } catch (error) {
-      print(error);
       rethrow;
     }
   }
@@ -179,6 +178,34 @@ class AuthService {
       }
 
       return json.decode(response.body) as num;
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  Future<List<User>> findAllUsers() async {
+    const url = "http://10.0.2.2:3004/objects?type=USER";
+
+    try {
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode >= 500) {
+        throw HttpException("Something went wrong");
+      } else if (response.statusCode >= 400) {
+        throw HttpException("Unauthorized");
+      }
+
+      final body = json.decode(response.body) as List<dynamic>;
+
+      return body
+          .map((userData) => User(
+                userData['id'],
+                userData['data']['username'],
+                userData['data']['email'],
+                userData['data']['name'],
+                userData['data']['imageUrl'],
+              ))
+          .toList();
     } catch (error) {
       rethrow;
     }

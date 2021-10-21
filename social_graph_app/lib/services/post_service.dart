@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:social_graph_app/exceptions/http_exception.dart';
 import 'package:social_graph_app/models/user.dart';
 
 import '../models/post.dart';
@@ -86,6 +87,55 @@ class PostService {
             });
       }
       return users;
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  Future<List<Post>> findUserFeed(String userId) async {
+    final url = "http://10.0.2.2:3004/objects/feed/$userId";
+
+    try {
+      final response = await http.get(Uri.parse(url));
+      List<Post> posts = [];
+      if (response.statusCode < 400) {
+        final fetchedPosts = json.decode(response.body) as List;
+
+        fetchedPosts.sort((a, b) => b["createdAt"].compareTo(a["createdAt"]));
+
+        fetchedPosts.forEach((post) => {
+              posts.add(Post(
+                post["id"],
+                post["data"]["text"],
+                post["data"]["url"] ?? "",
+                DateTime.parse(post["createdAt"]),
+              ))
+            });
+      }
+      return posts;
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  Future<User> findCreator(String postId) async {
+    final url =
+        "http://10.0.2.2:3004/objects/$postId/adjacents?type=USER&associationType=CREATED_BY";
+
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode >= 400) {
+        throw HttpException("Unable to fetch the comment creator");
+      }
+
+      final fetchedUsers = json.decode(response.body);
+      return User(
+        fetchedUsers[0]['id'],
+        fetchedUsers[0]['data']['username'],
+        fetchedUsers[0]['data']['email'],
+        fetchedUsers[0]['data']['name'],
+        fetchedUsers[0]['data']['imageUrl'],
+      );
     } catch (error) {
       rethrow;
     }

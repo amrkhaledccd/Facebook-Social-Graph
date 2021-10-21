@@ -7,8 +7,6 @@ import 'package:social_graph_app/providers/post_provider.dart';
 import 'package:social_graph_app/providers/user_provider.dart';
 import 'package:social_graph_app/widgets/profile_card.dart';
 import 'package:social_graph_app/widgets/profile_friends.dart';
-
-import '../services/post_service.dart';
 import '../widgets/new_post.dart';
 import '../widgets/post.dart';
 import '../widgets/posts_title.dart';

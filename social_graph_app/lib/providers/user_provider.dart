@@ -20,16 +20,14 @@ class UserProvider with ChangeNotifier {
     return _friends;
   }
 
-  Future<void> loadUser(
-      String username, String token, User? currentUser) async {
-    if (currentUser != null) {
-      _user = currentUser;
+  Future<void> loadUser(String username, String token, User? loadedUser) async {
+    print('loading user $username');
+    if (loadedUser != null) {
+      _user = loadedUser;
     } else {
       final response = await _authService.findUser(username, token);
       _user = response;
     }
-
-    notifyListeners();
   }
 
   Future<void> loadUserFriends(String token) async {
@@ -54,5 +52,9 @@ class UserProvider with ChangeNotifier {
     _friendsCount =
         await _authService.countMutualFriends(currentUserId, user!.id, toekn);
     notifyListeners();
+  }
+
+  Future<List<User>> findAllUsers() async {
+    return await _authService.findAllUsers();
   }
 }

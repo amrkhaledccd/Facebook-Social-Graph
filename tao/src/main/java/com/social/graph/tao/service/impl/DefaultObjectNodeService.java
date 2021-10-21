@@ -33,6 +33,11 @@ public class DefaultObjectNodeService implements ObjectNodeService {
     }
 
     @Override
+    public List<ObjectNode> findObjectsByType(ObjectType type) {
+        return repository.findByType(type);
+    }
+
+    @Override
     public List<ObjectNode> findAdjacentObjects(
             UUID objectId, Optional<Integer> limit, ObjectType type, AssociationType associationType) {
         findObjectById(objectId);
@@ -64,5 +69,11 @@ public class DefaultObjectNodeService implements ObjectNodeService {
     @Override
     public void deleteObject(UUID objectId) {
 
+    }
+
+    // This is a dummy function to generate user feed just for the sake of demo.
+    @Override
+    public List<ObjectNode> findUserFeed(UUID userId) {
+        return repository.findUserFeed(userId);
     }
 }

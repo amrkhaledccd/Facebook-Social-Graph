@@ -24,4 +24,12 @@ class PostProvider with ChangeNotifier {
   Future<Post> createPost(String text, String url) async {
     return await _postService.createPost(text, url);
   }
+
+  Future<List<Post>> findUserFeed(String userId) async {
+    return await _postService.findUserFeed(userId);
+  }
+
+  Future<User> findCreator(String postId) async {
+    return await _postService.findCreator(postId);
+  }
 }
