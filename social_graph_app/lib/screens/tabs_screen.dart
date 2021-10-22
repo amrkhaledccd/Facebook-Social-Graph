@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:social_graph_app/providers/group_provider.dart';
 import 'package:social_graph_app/providers/post_provider.dart';
 import 'package:social_graph_app/providers/user_provider.dart';
 import 'package:social_graph_app/screens/find_people_screen.dart';
@@ -28,7 +29,11 @@ class _TabsScreenState extends State<TabsScreen> {
         create: (ctx) => PostProvider(),
       )
     ], child: const HomeScreen()),
-    const GroupsScreen(),
+    MultiProvider(providers: [
+      ChangeNotifierProvider(
+        create: (_) => GroupProvider(),
+      ),
+    ], child: const GroupsScreen()),
     MultiProvider(
       providers: [
         ChangeNotifierProvider<PostProvider>(

@@ -11,7 +11,13 @@ class FindPeopleScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final _userProvider = Provider.of<UserProvider>(context, listen: false);
     return Scaffold(
-        appBar: AppBar(title: const Text('Find People')),
+        appBar: AppBar(
+          title: const Text('Find People'),
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          centerTitle: true,
+          elevation: 0,
+        ),
         body: Padding(
           padding: const EdgeInsets.all(10),
           child: FutureBuilder(

@@ -19,7 +19,13 @@ class HomeScreen extends StatelessWidget {
 
     return Scaffold(
         backgroundColor: Colors.blueGrey[50],
-        appBar: AppBar(title: const Text('Social graph')),
+        appBar: AppBar(
+          title: const Text('Social graph'),
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          centerTitle: true,
+          elevation: 0,
+        ),
         body: Padding(
           padding: const EdgeInsets.all(10),
           child: FutureBuilder(
