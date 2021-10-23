@@ -44,8 +44,15 @@ public interface ObjectNodeRepository extends Neo4jRepository<ObjectNode, UUID> 
     @Query("MATCH (:ObjectNode{id: $objId1}) -[r:relate_to{type: $type}]- (:ObjectNode{id: $objId2}) delete r")
     void deleteAssociation(UUID objId1, UUID objId2, AssociationType type);
 
+    @Query("MATCH  (u:ObjectNode{id: $objectId}), (n:ObjectNode{type: $objectType}) " +
+            "WHERE NOT (u) - [:relate_to{type: $associationType}] -> (n) return n")
+    List<ObjectNode> findObjectsWhereRelationNotExists(
+            UUID objectId, ObjectType objectType, AssociationType associationType);
+
     // This is a dummy function to generate user feed just for the sake of demo.
     @Query("MATCH (n:ObjectNode{id: $userId}) - [:relate_to{type: 'FRIEND'}] " +
             "-> (u:ObjectNode{type: 'USER'}) -[:relate_to{type: 'CREATED'}]-> (p:ObjectNode{type: 'POST'}) return p")
     List<ObjectNode> findUserFeed(UUID userId);
+
+
 }

@@ -62,4 +62,31 @@ class GroupsService {
       rethrow;
     }
   }
+
+  Future<List<Group>> findOtherGroups(String userId) async {
+    final url =
+        "http://10.0.2.2:3004/objects/$userId/no_relation?objectType=GROUP&associationType=CREATED";
+
+    try {
+      final response = await http.get(Uri.parse(url));
+      List<Group> groups = [];
+      if (response.statusCode < 400) {
+        final fetchedGroups = json.decode(response.body) as List;
+
+        fetchedGroups.sort((a, b) => b["createdAt"].compareTo(a["createdAt"]));
+
+        fetchedGroups.forEach((post) => {
+              groups.add(Group(
+                post["id"],
+                post["data"]["name"],
+                post["data"]["imageUrl"] ?? "",
+                DateTime.parse(post["updatedAt"]),
+              ))
+            });
+      }
+      return groups;
+    } catch (error) {
+      rethrow;
+    }
+  }
 }

@@ -70,4 +70,11 @@ public class ObjectNodeApi {
         return objectNodeService.findUserFeed(userId);
     }
 
+    @GetMapping("/{objectId1}/no_relation")
+    public List<ObjectNode> findObjectsWhereRelationNotExists(
+            @PathVariable UUID objectId1,
+            @RequestParam ObjectType objectType,
+            @RequestParam AssociationType associationType) {
+        return objectNodeService.findObjectsWhereRelationNotExists(objectId1, objectType, associationType);
+    }
 }

@@ -62,6 +62,11 @@ public class DefaultObjectNodeService implements ObjectNodeService {
     }
 
     @Override
+    public List<ObjectNode> findObjectsWhereRelationNotExists(UUID objectId, ObjectType objectType, AssociationType associationType) {
+        return repository.findObjectsWhereRelationNotExists(objectId, objectType, associationType);
+    }
+
+    @Override
     public void updateObject(UUID objectId) {
 
     }

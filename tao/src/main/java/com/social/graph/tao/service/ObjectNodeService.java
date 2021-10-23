@@ -18,6 +18,10 @@ public interface ObjectNodeService {
     long countAdjacentObjects(UUID objectId, ObjectType type);
     List<ObjectNode> findMutualObjects(UUID objId1, UUID objId2, int limit, ObjectType type);
     long countMutualObjects(UUID objId1, UUID objId2, ObjectType type);
+
+    List<ObjectNode> findObjectsWhereRelationNotExists(
+            UUID objectId, ObjectType objectType, AssociationType associationType);
+
     void updateObject(UUID objectId);
     void deleteObject(UUID objectId);
 

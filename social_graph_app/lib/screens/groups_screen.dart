@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:social_graph_app/providers/auth_provider.dart';
 import 'package:social_graph_app/providers/group_provider.dart';
 import 'package:social_graph_app/widgets/add_new_group.dart';
+import 'package:social_graph_app/widgets/horizontal_group_list.dart';
+import 'package:social_graph_app/widgets/verticle_group_list.dart';
 
 class GroupsScreen extends StatefulWidget {
   const GroupsScreen({Key? key}) : super(key: key);
@@ -16,8 +18,9 @@ class _GroupsScreenState extends State<GroupsScreen> {
   void initState() {
     Future.delayed(Duration.zero, () {
       final _authProvider = Provider.of<AuthProvider>(context, listen: false);
-      Provider.of<GroupProvider>(context, listen: false)
-          .findUserGroups(_authProvider.currentUser.id);
+      final _groupProvider = Provider.of<GroupProvider>(context, listen: false);
+      _groupProvider.findUserGroups(_authProvider.currentUser.id);
+      _groupProvider.findOtherGroups(_authProvider.currentUser.id);
     });
     super.initState();
   }
@@ -57,56 +60,33 @@ class _GroupsScreenState extends State<GroupsScreen> {
         ),
         body: Column(
           children: [
-            SizedBox(
-              height: 140,
-              width: double.infinity,
-              child: ListView.builder(
-                  shrinkWrap: true,
-                  scrollDirection: Axis.horizontal,
-                  itemCount: _groupProvider.userGroups.length,
-                  itemBuilder: (_, i) => SharedWithItem(
-                      _groupProvider.userGroups[i].name,
-                      _groupProvider.userGroups[i].imageUrl)),
-            ),
+            const GroupsTitle("Your Groups"),
+            HorizontalGroupList(_groupProvider.userGroups),
+            const GroupsTitle("Member Of", marginTop: 10),
+            HorizontalGroupList(_groupProvider.userGroups),
+            const GroupsTitle("Explore Groups", marginTop: 10),
+            Expanded(child: VerticleGroupList(_groupProvider.otherGroups)),
           ],
         ));
   }
 }
 
-class SharedWithItem extends StatelessWidget {
-  final String name;
-  final String imageUrl;
-
-  SharedWithItem(this.name, this.imageUrl);
+class GroupsTitle extends StatelessWidget {
+  final String title;
+  final double marginTop;
+  const GroupsTitle(this.title, {Key? key, this.marginTop = 0})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.all(5),
-      //width: 80,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.network(
-              imageUrl,
-              height: 60,
-              width: 60,
-              fit: BoxFit.cover,
-            ),
-          ),
-          const SizedBox(width: 5),
-          Text(
-            name,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
-            softWrap: true,
-            maxLines: 1,
-            overflow: TextOverflow.visible,
-            textAlign: TextAlign.center,
-          ),
-        ],
+      width: double.infinity,
+      color: Colors.white,
+      margin: EdgeInsets.only(top: marginTop),
+      padding: const EdgeInsets.all(10),
+      child: Text(
+        title,
+        style: Theme.of(context).textTheme.headline6,
       ),
     );
   }

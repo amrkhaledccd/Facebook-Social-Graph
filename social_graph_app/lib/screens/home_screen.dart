@@ -27,7 +27,7 @@ class HomeScreen extends StatelessWidget {
           elevation: 0,
         ),
         body: Padding(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.only(top: 10),
           child: FutureBuilder(
             future: _postProvider.findUserFeed(_authProvider.currentUser.id),
             builder: (_, snapshot) {

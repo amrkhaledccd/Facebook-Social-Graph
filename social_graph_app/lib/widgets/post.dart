@@ -55,7 +55,10 @@ class _PostWidgetState extends State<PostWidget> {
               radius: 20,
               backgroundImage: NetworkImage(_userProvider.user!.imageUrl),
             ),
-            title: Text(_userProvider.user!.name),
+            title: Text(
+              _userProvider.user!.name,
+              style: const TextStyle(fontWeight: FontWeight.w800),
+            ),
             subtitle: Text(
                 widget.post.date.difference(DateTime.now()).inDays < 0
                     ? DateFormat.yMMMd().format(widget.post.date)
