@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:social_graph_app/models/group.dart';
+import 'package:social_graph_app/screens/group_details.dart';
 
 class VerticleGroupList extends StatelessWidget {
   final List<Group> _groups;
@@ -13,6 +14,10 @@ class VerticleGroupList extends StatelessWidget {
       child: ListView.builder(
         itemCount: _groups.length,
         itemBuilder: (_, i) => ListTile(
+          onTap: () {
+            Navigator.of(context)
+                .pushNamed(GroupDetails.routeName, arguments: _groups[i]);
+          },
           leading: ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: Image.network(

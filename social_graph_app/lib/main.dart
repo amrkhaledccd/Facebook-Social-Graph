@@ -4,6 +4,7 @@ import 'package:social_graph_app/providers/auth_provider.dart';
 import 'package:social_graph_app/providers/post_provider.dart';
 import 'package:social_graph_app/providers/user_provider.dart';
 import 'package:social_graph_app/screens/auth_screen.dart';
+import 'package:social_graph_app/screens/group_details.dart';
 import 'package:social_graph_app/screens/profile_screen.dart';
 import 'package:social_graph_app/screens/tabs_screen.dart';
 import 'package:social_graph_app/services/association_service.dart';
@@ -50,6 +51,7 @@ class MyApp extends StatelessWidget {
                     ],
                     child: const ProfileScreen(),
                   ),
+              GroupDetails.routeName: (ctx) => const GroupDetails(),
             },
           ),
         ),

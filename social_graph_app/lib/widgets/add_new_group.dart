@@ -127,10 +127,11 @@ class _AddNewGroupState extends State<AddNewGroup> {
                             });
                             final name = _nameController.value.text;
                             String imageUrl = _urlController.value.text;
-                            final _group = await Provider.of<GroupProvider>(
-                                    context,
-                                    listen: false)
-                                .createGroup(name, imageUrl);
+                            final _groupProvider = Provider.of<GroupProvider>(
+                                context,
+                                listen: false);
+                            final _group = await _groupProvider.createGroup(
+                                name, imageUrl);
 
                             await _associationService.createAssociation(
                                 _authProvider.currentUser.id,
@@ -140,6 +141,8 @@ class _AddNewGroupState extends State<AddNewGroup> {
                             setState(() {
                               loading = false;
                             });
+                            await _groupProvider
+                                .findUserGroups(_authProvider.currentUser.id);
                             _navigator.pop();
                           },
                     child: const Text(
