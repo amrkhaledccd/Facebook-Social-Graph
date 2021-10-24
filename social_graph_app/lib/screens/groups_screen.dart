@@ -62,7 +62,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
         body: Column(
           children: [
             const GroupsTitle("Your Groups"),
-            HorizontalGroupList(_groupProvider.userGroups),
+            HorizontalGroupList(_groupProvider.userGroups, isUserGroup: true),
             const GroupsTitle("Member Of", marginTop: 10),
             HorizontalGroupList(_groupProvider.memberOfGroups),
             const GroupsTitle("Explore Groups", marginTop: 10),

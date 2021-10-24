@@ -45,7 +45,9 @@ public interface ObjectNodeRepository extends Neo4jRepository<ObjectNode, UUID> 
     void deleteAssociation(UUID objId1, UUID objId2, AssociationType type);
 
     @Query("MATCH  (u:ObjectNode{id: $objectId}), (n:ObjectNode{type: $objectType}) " +
-            "WHERE NOT (u) - [:relate_to{type: $associationType}] -> (n) return n")
+            "WHERE NOT (u) - [:relate_to{type: $associationType}] -> (n) " +
+            "AND NOT (u) - [:relate_to{type: 'JOINED'}] -> (n) " +
+            "return n")
     List<ObjectNode> findObjectsWhereRelationNotExists(
             UUID objectId, ObjectType objectType, AssociationType associationType);
 
