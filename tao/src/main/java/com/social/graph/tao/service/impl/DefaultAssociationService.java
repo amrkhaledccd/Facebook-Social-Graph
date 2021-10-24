@@ -4,6 +4,7 @@ import com.social.graph.tao.exception.AssociationNotFoundException;
 import com.social.graph.tao.exception.ObjectNotFoundException;
 import com.social.graph.tao.model.AssociationType;
 import com.social.graph.tao.model.ObjectNode;
+import com.social.graph.tao.model.ObjectType;
 import com.social.graph.tao.repository.ObjectNodeRepository;
 import com.social.graph.tao.service.AssociationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +36,8 @@ public class DefaultAssociationService implements AssociationService {
     }
 
     @Override
-    public long countAssociation(UUID startObjId, AssociationType type) {
-        return repository.countAssociation(startObjId, type);
+    public long countAssociation(UUID startObjId, AssociationType type, ObjectType objectType) {
+        return repository.countAssociation(startObjId, type, objectType);
     }
 
     @Override

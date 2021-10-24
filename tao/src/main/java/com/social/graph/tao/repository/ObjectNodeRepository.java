@@ -13,6 +13,12 @@ public interface ObjectNodeRepository extends Neo4jRepository<ObjectNode, UUID> 
     @Query("MATCH (n:ObjectNode{id:$objectId}) -[r:relate_to{type: $associationType}]-> (p:ObjectNode{type:$type}) return p")
     List<ObjectNode> findAdjacentObjects(UUID objectId, ObjectType type, AssociationType associationType);
 
+    @Query("MATCH (n:ObjectNode{id:$objectId}) -[:relate_to{type: $associationType}]-> (p:ObjectNode{type:$type}) " +
+            "WHERE NOT (p) - [:relate_to{type: $filter}] -> (:ObjectNode) " +
+            "return p")
+    List<ObjectNode> findAdjacentObjectsWithFilterRelation(
+            UUID objectId, ObjectType type, AssociationType associationType, AssociationType filter);
+
     @Query("MATCH (n:ObjectNode{type:$type}) return n;")
     List<ObjectNode> findByType(ObjectType type);
 
@@ -38,22 +44,24 @@ public interface ObjectNodeRepository extends Neo4jRepository<ObjectNode, UUID> 
     @Query("MATCH (n:ObjectNode{id:$startObjId}) -[r:relate_to{type:$type}]- (m:ObjectNode{id:$endObjId}) RETURN COUNT(r) > 0")
     boolean associationExists(UUID startObjId, UUID endObjId, AssociationType type);
 
-    @Query("MATCH (:ObjectNode{id:$startObjId}) -[r:relate_to{type:$type}]- (:ObjectNode) RETURN COUNT(r)")
-    long countAssociation(UUID startObjId, AssociationType type);
+    @Query("MATCH (:ObjectNode{id:$startObjId}) - [r:relate_to{type:$type}] -> (:ObjectNode{type: $objectType}) " +
+            "RETURN COUNT(r)")
+    long countAssociation(UUID startObjId, AssociationType type, ObjectType objectType);
 
     @Query("MATCH (:ObjectNode{id: $objId1}) -[r:relate_to{type: $type}]- (:ObjectNode{id: $objId2}) delete r")
     void deleteAssociation(UUID objId1, UUID objId2, AssociationType type);
 
     @Query("MATCH  (u:ObjectNode{id: $objectId}), (n:ObjectNode{type: $objectType}) " +
-            "WHERE NOT (u) - [:relate_to{type: $associationType}] -> (n) " +
-            "AND NOT (u) - [:relate_to{type: 'JOINED'}] -> (n) " +
+            "WHERE NOT (u) - [:relate_to{type: $associationType1}] -> (n) " +
+            "AND NOT (u) - [:relate_to{type: $associationType2}] -> (n) " +
             "return n")
-    List<ObjectNode> findObjectsWhereRelationNotExists(
-            UUID objectId, ObjectType objectType, AssociationType associationType);
+    List<ObjectNode> findObjectsWhere2RelationsNotExist(
+            UUID objectId, ObjectType objectType, AssociationType associationType1, AssociationType associationType2);
 
     // This is a dummy function to generate user feed just for the sake of demo.
     @Query("MATCH (n:ObjectNode{id: $userId}) - [:relate_to{type: 'FRIEND'}] " +
-            "-> (u:ObjectNode{type: 'USER'}) -[:relate_to{type: 'CREATED'}]-> (p:ObjectNode{type: 'POST'}) return p")
+            "-> (u:ObjectNode{type: 'USER'}) -[:relate_to{type: 'CREATED'}]-> (p:ObjectNode{type: 'POST'}) " +
+            "WHERE NOT (p) - [:relate_to] -> (:ObjectNode{type: 'GROUP'}) return p")
     List<ObjectNode> findUserFeed(UUID userId);
 
 

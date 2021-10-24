@@ -65,7 +65,7 @@ class GroupsService {
 
   Future<List<Group>> findOtherGroups(String userId) async {
     final url =
-        "http://10.0.2.2:3004/objects/$userId/no_relation?objectType=GROUP&associationType=CREATED";
+        "http://10.0.2.2:3004/objects/$userId/no_relations?objectType=GROUP&associationType1=CREATED&associationType2=JOINED";
 
     try {
       final response = await http.get(Uri.parse(url));

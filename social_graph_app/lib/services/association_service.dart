@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:social_graph_app/exceptions/http_exception.dart';
 import 'package:social_graph_app/models/association_type.dart';
 import 'package:http/http.dart' as http;
+import 'package:social_graph_app/models/object_type.dart';
 
 class AssociationService with ChangeNotifier {
   Future<void> createAssociation(
@@ -41,9 +42,10 @@ class AssociationService with ChangeNotifier {
     }
   }
 
-  Future<num> countAssociation(String objectId, AssociationType type) async {
+  Future<num> countAssociation(
+      String objectId, AssociationType type, ObjectType objectType) async {
     final _url =
-        "http://10.0.2.2:3004/associations/$objectId/count?type=${describeEnum(type).toUpperCase()}";
+        "http://10.0.2.2:3004/associations/$objectId/count?type=${describeEnum(type).toUpperCase()}&objectType=${describeEnum(objectType).toUpperCase()}";
 
     try {
       final response = await http.get(Uri.parse(_url), headers: {});

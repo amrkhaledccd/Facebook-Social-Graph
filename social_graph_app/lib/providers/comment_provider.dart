@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:social_graph_app/models/association_type.dart';
 import 'package:social_graph_app/models/comment.dart';
+import 'package:social_graph_app/models/object_type.dart';
 import 'package:social_graph_app/models/user.dart';
 import 'package:social_graph_app/services/association_service.dart';
 import 'package:social_graph_app/services/comment_service.dart';
@@ -27,8 +28,8 @@ class CommentProvider with ChangeNotifier {
 
   Future<void> countComments(String postId) async {
     final _associationService = AssociationService();
-    var count =
-        await _associationService.countAssociation(postId, AssociationType.has);
+    var count = await _associationService.countAssociation(
+        postId, AssociationType.has, ObjectType.comment);
     _numOfCoumments = count;
     notifyListeners();
   }

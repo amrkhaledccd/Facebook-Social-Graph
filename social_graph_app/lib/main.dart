@@ -55,6 +55,9 @@ class MyApp extends StatelessWidget {
               GroupDetails.routeName: (ctx) => MultiProvider(providers: [
                     ChangeNotifierProvider(
                       create: (ctx) => GroupProvider(),
+                    ),
+                    ChangeNotifierProvider(
+                      create: (ctx) => PostProvider(),
                     )
                   ], child: const GroupDetails()),
             },

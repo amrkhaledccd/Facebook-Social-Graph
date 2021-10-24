@@ -17,6 +17,12 @@ class PostProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> findGroupPosts(String groupId) async {
+    final response = await _postService.findGroupPosts(groupId);
+    _items = response;
+    notifyListeners();
+  }
+
   Future<List<User>> findPostLikers(String postId) async {
     return await _postService.findPostLikers(postId);
   }

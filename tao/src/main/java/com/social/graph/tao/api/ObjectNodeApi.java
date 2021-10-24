@@ -30,6 +30,15 @@ public class ObjectNodeApi {
         return objectNodeService.findAdjacentObjects(objectId, limit, type, associationType);
     }
 
+    @GetMapping("/{objectId}/adjcents/filter")
+    public List<ObjectNode> findAdjacentObjectsWithFilterRelation(
+            @PathVariable UUID objectId,
+            @RequestParam ObjectType type,
+            @RequestParam AssociationType associationType,
+            @RequestParam AssociationType filter){
+        return objectNodeService.findAdjacentObjectsWithFilterRelation(objectId, type, associationType, filter);
+    }
+
     @GetMapping()
     public List<ObjectNode> findObjectsByType(@RequestParam ObjectType type) {
         return objectNodeService.findObjectsByType(type);
@@ -70,11 +79,13 @@ public class ObjectNodeApi {
         return objectNodeService.findUserFeed(userId);
     }
 
-    @GetMapping("/{objectId1}/no_relation")
-    public List<ObjectNode> findObjectsWhereRelationNotExists(
+    @GetMapping("/{objectId1}/no_relations")
+    public List<ObjectNode> findObjectsWhere2RelationsNotExist(
             @PathVariable UUID objectId1,
             @RequestParam ObjectType objectType,
-            @RequestParam AssociationType associationType) {
-        return objectNodeService.findObjectsWhereRelationNotExists(objectId1, objectType, associationType);
+            @RequestParam AssociationType associationType1,
+            @RequestParam AssociationType associationType2) {
+        return objectNodeService
+                .findObjectsWhere2RelationsNotExist(objectId1, objectType, associationType1, associationType2);
     }
 }

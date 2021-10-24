@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:link_previewer_aad/link_previewer_aad.dart';
 import 'package:provider/provider.dart';
-
 import 'package:social_graph_app/models/association_type.dart';
+
 import 'package:social_graph_app/providers/auth_provider.dart';
 import 'package:social_graph_app/providers/post_provider.dart';
 import 'package:social_graph_app/services/association_service.dart';
 
 class NewPost extends StatefulWidget {
-  const NewPost({Key? key}) : super(key: key);
-
+  final Function? onCreatePost;
+  const NewPost({Key? key, this.onCreatePost}) : super(key: key);
   @override
   State<NewPost> createState() => _NewPostState();
 }
@@ -45,8 +45,6 @@ class _NewPostState extends State<NewPost> {
   Widget build(BuildContext context) {
     final _postProvider = Provider.of<PostProvider>(context, listen: false);
     final _authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final _associationService =
-        Provider.of<AssociationService>(context, listen: false);
 
     final _scaffoldMessenger = ScaffoldMessenger.of(context);
 
@@ -117,13 +115,12 @@ class _NewPostState extends State<NewPost> {
                         final _post = await _postProvider.createPost(
                             _textContrller.value.text, _detectedUrl);
 
-                        await _associationService.createAssociation(
-                            _authProvider.currentUser.id,
-                            _post.id,
-                            AssociationType.created);
+                        await Provider.of<AssociationService>(context,
+                                listen: false)
+                            .createAssociation(_authProvider.currentUser.id,
+                                _post.id, AssociationType.created);
 
-                        await _postProvider
-                            .findUserPosts(_authProvider.currentUser.id);
+                        widget.onCreatePost!(_post.id);
 
                         setState(() {
                           _textContrller.clear();

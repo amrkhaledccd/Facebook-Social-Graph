@@ -19,8 +19,11 @@ public interface ObjectNodeService {
     List<ObjectNode> findMutualObjects(UUID objId1, UUID objId2, int limit, ObjectType type);
     long countMutualObjects(UUID objId1, UUID objId2, ObjectType type);
 
-    List<ObjectNode> findObjectsWhereRelationNotExists(
-            UUID objectId, ObjectType objectType, AssociationType associationType);
+    List<ObjectNode> findAdjacentObjectsWithFilterRelation(
+            UUID objectId, ObjectType type, AssociationType associationType, AssociationType filter);
+
+    List<ObjectNode> findObjectsWhere2RelationsNotExist(
+            UUID objectId, ObjectType objectType, AssociationType associationType1, AssociationType associationType2);
 
     void updateObject(UUID objectId);
     void deleteObject(UUID objectId);

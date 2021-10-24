@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:social_graph_app/models/association_type.dart';
 import 'package:social_graph_app/providers/auth_provider.dart';
 import 'package:social_graph_app/providers/comment_provider.dart';
 import 'package:social_graph_app/providers/post_like_provider.dart';
 import 'package:social_graph_app/providers/post_provider.dart';
 import 'package:social_graph_app/providers/user_provider.dart';
+import 'package:social_graph_app/services/association_service.dart';
 import 'package:social_graph_app/widgets/profile_card.dart';
 import 'package:social_graph_app/widgets/profile_friends.dart';
 import '../widgets/new_post.dart';
@@ -115,8 +117,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: ProfileFriends(),
                     ),
                     if (_authProvider.currentUser.id == _userProvider.user!.id)
-                      const SliverToBoxAdapter(
-                        child: NewPost(),
+                      SliverToBoxAdapter(
+                        child: NewPost(
+                          onCreatePost: (_) async {
+                            await _postProvider
+                                .findUserPosts(_authProvider.currentUser.id);
+                          },
+                        ),
                       ),
                     const SliverToBoxAdapter(
                       child: PostsTitle(),

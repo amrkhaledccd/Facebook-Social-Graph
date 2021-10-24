@@ -9,7 +9,7 @@ import '../models/post.dart';
 class PostService {
   Future<List<Post>> findUserPosts(String userId) async {
     final url =
-        "http://10.0.2.2:3004/objects/$userId/adjacents?type=POST&associationType=CREATED";
+        "http://10.0.2.2:3004/objects/$userId/adjcents/filter?type=POST&associationType=CREATED&filter=OWNED_BY";
 
     try {
       final response = await http.get(Uri.parse(url));
@@ -136,6 +136,33 @@ class PostService {
         fetchedUsers[0]['data']['name'],
         fetchedUsers[0]['data']['imageUrl'],
       );
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  Future<List<Post>> findGroupPosts(String groupId) async {
+    final url =
+        "http://10.0.2.2:3004/objects/$groupId/adjacents?type=POST&associationType=HAS";
+
+    try {
+      final response = await http.get(Uri.parse(url));
+      List<Post> posts = [];
+      if (response.statusCode < 400) {
+        final fetchedPosts = json.decode(response.body) as List;
+
+        fetchedPosts.sort((a, b) => b["createdAt"].compareTo(a["createdAt"]));
+
+        fetchedPosts.forEach((post) => {
+              posts.add(Post(
+                post["id"],
+                post["data"]["text"],
+                post["data"]["url"] ?? "",
+                DateTime.parse(post["createdAt"]),
+              ))
+            });
+      }
+      return posts;
     } catch (error) {
       rethrow;
     }

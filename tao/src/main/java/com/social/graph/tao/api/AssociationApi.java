@@ -1,6 +1,7 @@
 package com.social.graph.tao.api;
 
 import com.social.graph.tao.model.AssociationType;
+import com.social.graph.tao.model.ObjectType;
 import com.social.graph.tao.payload.CreateAssociationRequest;
 import com.social.graph.tao.service.AssociationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +31,8 @@ public class AssociationApi {
 
     @GetMapping("/{objectId}/count")
     public long countAssociation(
-            @PathVariable UUID objectId, @RequestParam AssociationType type) {
-        return associationService.countAssociation(objectId, type);
+            @PathVariable UUID objectId, @RequestParam AssociationType type, ObjectType objectType) {
+        return associationService.countAssociation(objectId, type, objectType);
     }
 
     @DeleteMapping("/{id1}/{id2}")

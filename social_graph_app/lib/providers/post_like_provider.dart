@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:social_graph_app/models/association_type.dart';
+import 'package:social_graph_app/models/object_type.dart';
 import 'package:social_graph_app/services/association_service.dart';
 
 class PostLikeProvider with ChangeNotifier {
@@ -17,7 +18,7 @@ class PostLikeProvider with ChangeNotifier {
 
   Future<void> loadLikesStats(String postId, String userId) async {
     var likes = await _associationService.countAssociation(
-        postId, AssociationType.liked_by);
+        postId, AssociationType.liked_by, ObjectType.user);
 
     final isLikedByCurrentUser = await _associationService.associationExists(
       userId,
