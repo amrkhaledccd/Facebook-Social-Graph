@@ -26,6 +26,11 @@ class PostLikeProvider with ChangeNotifier {
     );
 
     if (likes == 0) {
+      if (_likedByCurrentUser) {
+        _likedByCurrentUser = false;
+      }
+      _likesText = '';
+      notifyListeners();
       return;
     }
     var text = "$likes";
