@@ -21,6 +21,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
       final _groupProvider = Provider.of<GroupProvider>(context, listen: false);
       _groupProvider.findUserGroups(_authProvider.currentUser.id);
       _groupProvider.findOtherGroups(_authProvider.currentUser.id);
+      _groupProvider.findMemberOfGroups(_authProvider.currentUser.id);
     });
     super.initState();
   }
@@ -63,7 +64,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
             const GroupsTitle("Your Groups"),
             HorizontalGroupList(_groupProvider.userGroups),
             const GroupsTitle("Member Of", marginTop: 10),
-            HorizontalGroupList(_groupProvider.userGroups),
+            HorizontalGroupList(_groupProvider.memberOfGroups),
             const GroupsTitle("Explore Groups", marginTop: 10),
             Expanded(child: VerticleGroupList(_groupProvider.otherGroups)),
           ],

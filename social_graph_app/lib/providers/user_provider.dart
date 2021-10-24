@@ -21,7 +21,6 @@ class UserProvider with ChangeNotifier {
   }
 
   Future<void> loadUser(String username, String token, User? loadedUser) async {
-    print('loading user $username');
     if (loadedUser != null) {
       _user = loadedUser;
     } else {

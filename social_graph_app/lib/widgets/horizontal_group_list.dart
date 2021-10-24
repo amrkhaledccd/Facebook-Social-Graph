@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:social_graph_app/models/group.dart';
 import 'package:social_graph_app/screens/group_details.dart';
 
@@ -25,13 +26,13 @@ class HorizontalGroupList extends StatelessWidget {
 
 class HorizontlGroupItem extends StatelessWidget {
   final Group _group;
-  HorizontlGroupItem(this._group);
+  const HorizontlGroupItem(this._group, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        Navigator.of(context)
+      onTap: () async {
+        await Navigator.of(context)
             .pushNamed(GroupDetails.routeName, arguments: _group);
       },
       child: Container(
