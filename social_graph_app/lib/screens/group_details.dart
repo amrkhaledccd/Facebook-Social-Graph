@@ -5,7 +5,7 @@ import 'package:social_graph_app/models/group.dart';
 import 'package:social_graph_app/models/user.dart';
 import 'package:social_graph_app/providers/auth_provider.dart';
 import 'package:social_graph_app/providers/comment_provider.dart';
-import 'package:social_graph_app/providers/group_provider.dart';
+import 'package:social_graph_app/providers/groups_provider.dart';
 import 'package:social_graph_app/providers/post_like_provider.dart';
 import 'package:social_graph_app/providers/post_provider.dart';
 import 'package:social_graph_app/providers/user_provider.dart';
@@ -36,7 +36,8 @@ class _GroupDetailsState extends State<GroupDetails> {
           ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
       final _group = argMap['group'] as Group;
       final _authProvider = Provider.of<AuthProvider>(context, listen: false);
-      final _groupProvider = Provider.of<GroupProvider>(context, listen: false);
+      final _groupProvider =
+          Provider.of<GroupsProvider>(context, listen: false);
       _groupProvider.checkIfJoinedByCurrentUser(
           _authProvider.currentUser.id, _group.id);
       final _postProvider = Provider.of<PostProvider>(context, listen: false);
@@ -85,7 +86,7 @@ class _GroupDetailsState extends State<GroupDetails> {
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     final _group = argMap['group'] as Group;
     final _isOwner = argMap['isOwner'] as bool;
-    final _groupProvider = Provider.of<GroupProvider>(context);
+    final _groupProvider = Provider.of<GroupsProvider>(context);
     final _postProvider = Provider.of<PostProvider>(context);
 
     return Scaffold(

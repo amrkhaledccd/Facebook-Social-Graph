@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:social_graph_app/models/association_type.dart';
 import 'package:social_graph_app/models/group.dart';
 import 'package:social_graph_app/providers/auth_provider.dart';
-import 'package:social_graph_app/providers/group_provider.dart';
+import 'package:social_graph_app/providers/groups_provider.dart';
 import 'package:social_graph_app/services/association_service.dart';
 
 class GroupDetailsAppbar extends StatefulWidget {
@@ -60,7 +60,7 @@ class _GroupDetailsAppbarState extends State<GroupDetailsAppbar> {
             if (!widget.isOWner)
               Expanded(
                 flex: 1,
-                child: Consumer<GroupProvider>(
+                child: Consumer<GroupsProvider>(
                   builder: (_, _groupProvider, _ch) => ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         primary: _groupProvider.currentUserJoined

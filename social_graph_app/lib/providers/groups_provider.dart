@@ -4,7 +4,7 @@ import 'package:social_graph_app/models/group.dart';
 import 'package:social_graph_app/services/association_service.dart';
 import 'package:social_graph_app/services/groups_service.dart';
 
-class GroupProvider with ChangeNotifier {
+class GroupsProvider with ChangeNotifier {
   List<Group> _userGroups = [];
   List<Group> _otherGroups = [];
   List<Group> _memberOfGroups = [];

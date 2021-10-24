@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:social_graph_app/models/group.dart';
 import 'package:social_graph_app/providers/auth_provider.dart';
-import 'package:social_graph_app/providers/group_provider.dart';
+import 'package:social_graph_app/providers/groups_provider.dart';
 import 'package:social_graph_app/screens/group_details.dart';
 
 class HorizontalGroupList extends StatelessWidget {
@@ -52,7 +52,7 @@ class HorizontlGroupItem extends StatelessWidget {
             arguments: {'group': _group, 'isOwner': isUserGroup});
         final _authProvider = Provider.of<AuthProvider>(context, listen: false);
         final _groupProvider =
-            Provider.of<GroupProvider>(context, listen: false);
+            Provider.of<GroupsProvider>(context, listen: false);
         await _groupProvider.findMemberOfGroups(_authProvider.currentUser.id);
         await _groupProvider.findOtherGroups(_authProvider.currentUser.id);
       },

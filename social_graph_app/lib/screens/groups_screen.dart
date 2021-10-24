@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_graph_app/providers/auth_provider.dart';
-import 'package:social_graph_app/providers/group_provider.dart';
+import 'package:social_graph_app/providers/groups_provider.dart';
 import 'package:social_graph_app/widgets/add_new_group.dart';
 import 'package:social_graph_app/widgets/horizontal_group_list.dart';
 import 'package:social_graph_app/widgets/verticle_group_list.dart';
@@ -18,7 +18,8 @@ class _GroupsScreenState extends State<GroupsScreen> {
   void initState() {
     Future.delayed(Duration.zero, () {
       final _authProvider = Provider.of<AuthProvider>(context, listen: false);
-      final _groupProvider = Provider.of<GroupProvider>(context, listen: false);
+      final _groupProvider =
+          Provider.of<GroupsProvider>(context, listen: false);
       _groupProvider.findUserGroups(_authProvider.currentUser.id);
       _groupProvider.findOtherGroups(_authProvider.currentUser.id);
       _groupProvider.findMemberOfGroups(_authProvider.currentUser.id);
@@ -28,7 +29,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final _groupProvider = Provider.of<GroupProvider>(context);
+    final _groupProvider = Provider.of<GroupsProvider>(context);
     return Scaffold(
         backgroundColor: Colors.blueGrey[50],
         appBar: AppBar(

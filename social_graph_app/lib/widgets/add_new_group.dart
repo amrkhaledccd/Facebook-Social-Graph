@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_graph_app/models/association_type.dart';
 import 'package:social_graph_app/providers/auth_provider.dart';
-import 'package:social_graph_app/providers/group_provider.dart';
+import 'package:social_graph_app/providers/groups_provider.dart';
 import 'package:social_graph_app/services/association_service.dart';
 
 class AddNewGroup extends StatefulWidget {
@@ -127,7 +127,7 @@ class _AddNewGroupState extends State<AddNewGroup> {
                             });
                             final name = _nameController.value.text;
                             String imageUrl = _urlController.value.text;
-                            final _groupProvider = Provider.of<GroupProvider>(
+                            final _groupProvider = Provider.of<GroupsProvider>(
                                 context,
                                 listen: false);
                             final _group = await _groupProvider.createGroup(
