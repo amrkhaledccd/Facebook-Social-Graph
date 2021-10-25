@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:social_graph_app/models/association_type.dart';
 import 'package:social_graph_app/models/group.dart';
 import 'package:social_graph_app/providers/auth_provider.dart';
+import 'package:social_graph_app/providers/group_provider.dart';
 import 'package:social_graph_app/providers/groups_provider.dart';
 import 'package:social_graph_app/services/association_service.dart';
 
@@ -96,6 +97,9 @@ class _GroupDetailsAppbarState extends State<GroupDetailsAppbar> {
                                   _authProvider.currentUser.id,
                                   widget.group.id);
 
+                              await Provider.of<GroupProvider>(context,
+                                      listen: false)
+                                  .countMembers(widget.group.id);
                               setState(() {
                                 _loading = false;
                               });

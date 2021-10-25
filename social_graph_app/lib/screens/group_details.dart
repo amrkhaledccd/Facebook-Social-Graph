@@ -5,12 +5,14 @@ import 'package:social_graph_app/models/group.dart';
 import 'package:social_graph_app/models/user.dart';
 import 'package:social_graph_app/providers/auth_provider.dart';
 import 'package:social_graph_app/providers/comment_provider.dart';
+import 'package:social_graph_app/providers/group_provider.dart';
 import 'package:social_graph_app/providers/groups_provider.dart';
 import 'package:social_graph_app/providers/post_like_provider.dart';
 import 'package:social_graph_app/providers/post_provider.dart';
 import 'package:social_graph_app/providers/user_provider.dart';
 import 'package:social_graph_app/services/association_service.dart';
 import 'package:social_graph_app/widgets/group_details_appbar.dart';
+import 'package:social_graph_app/widgets/group_stats.dart';
 import 'package:social_graph_app/widgets/new_post.dart';
 import 'package:social_graph_app/widgets/post.dart';
 import 'package:social_graph_app/widgets/posts_title.dart';
@@ -36,12 +38,16 @@ class _GroupDetailsState extends State<GroupDetails> {
           ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
       final _group = argMap['group'] as Group;
       final _authProvider = Provider.of<AuthProvider>(context, listen: false);
-      final _groupProvider =
+      final _groupsProvider =
           Provider.of<GroupsProvider>(context, listen: false);
-      _groupProvider.checkIfJoinedByCurrentUser(
+      _groupsProvider.checkIfJoinedByCurrentUser(
           _authProvider.currentUser.id, _group.id);
       final _postProvider = Provider.of<PostProvider>(context, listen: false);
       _postProvider.findGroupPosts(_group.id);
+
+      final _groupProvider = Provider.of<GroupProvider>(context, listen: false);
+      _groupProvider.countMembers(_group.id);
+      _groupProvider.countPosts(_group.id);
       setState(() {
         _loading = false;
       });
@@ -86,7 +92,7 @@ class _GroupDetailsState extends State<GroupDetails> {
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     final _group = argMap['group'] as Group;
     final _isOwner = argMap['isOwner'] as bool;
-    final _groupProvider = Provider.of<GroupsProvider>(context);
+    final _groupsProvider = Provider.of<GroupsProvider>(context);
     final _postProvider = Provider.of<PostProvider>(context);
 
     return Scaffold(
@@ -95,7 +101,10 @@ class _GroupDetailsState extends State<GroupDetails> {
         child: CustomScrollView(
           slivers: [
             GroupDetailsAppbar(_group, isOWner: _isOwner),
-            if (_groupProvider.currentUserJoined || _isOwner)
+            const SliverToBoxAdapter(
+              child: GroupStats(),
+            ),
+            if (_groupsProvider.currentUserJoined || _isOwner)
               SliverToBoxAdapter(
                 child: ChangeNotifierProvider(
                   create: (ctx) => PostProvider(),
@@ -105,6 +114,8 @@ class _GroupDetailsState extends State<GroupDetails> {
                               listen: false)
                           .createAssociation(
                               _group.id, postId, AssociationType.has);
+                      await Provider.of<GroupProvider>(context, listen: false)
+                          .countPosts(_group.id);
                       await _postProvider.findGroupPosts(_group.id);
                     },
                   ),
