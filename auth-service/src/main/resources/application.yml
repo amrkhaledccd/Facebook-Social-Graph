@@ -7,11 +7,15 @@ spring:
   application:
     name: auth-service
 
-  data:
-    neo4j:
-      uri: bolt://localhost:7687
-      username: neo4j
-      password: admin
+org:
+  neo4j:
+    driver:
+      uri: neo4j+s://52667faa.databases.neo4j.io
+      authentication:
+        username: neo4j
+        password: SsoBFsrhUtpHmyTV3S3Kzlr5INjIIqVwzakTOrCgu_k
+      config:
+        encrypted: true
 
 security:
   basic:

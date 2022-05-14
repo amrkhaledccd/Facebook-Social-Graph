@@ -12,7 +12,7 @@
 	<artifactId>tao</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>tao</name>
-	<description>Dataaccess for social graph</description>
+	<description>Data access for social graph</description>
 	<properties>
 		<java.version>16</java.version>
 	</properties>
@@ -24,6 +24,11 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.neo4j.driver</groupId>
+			<artifactId>neo4j-java-driver-spring-boot-starter</artifactId>
+			<version>4.3.6.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.neo4j</groupId>
